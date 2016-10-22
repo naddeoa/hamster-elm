@@ -1,0 +1,18 @@
+<html>
+
+  <head>
+   <title>This title shows at the top</title>
+  </head>
+
+  <body>
+    <div id='container'></div>
+    <script src="../../build/elm/bundle.js"></script>
+    <script>
+        var Elm = require('../../build/elm/bundle.js');
+        var container = document.getElementById('container');
+        var app = Elm.Main.embed(container);
+    </script>
+
+  </body>
+</html>
+
