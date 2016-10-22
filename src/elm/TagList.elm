@@ -1,52 +1,37 @@
-module TagList exposing (view, update, Msg, Msg(Add), Msg(Remove), Msg(Pop), Model)
+module TagList exposing (..)
 
 import Html exposing (Html, div, text, ul, li)
 import Html.App
 import List exposing (foldr, map, tail, filter)
-
-
--- Tutorial found at https://www.elm-tutorial.org/en/02-elm-arch/02-structure.html
--- Just like prop types
+import Tag
 
 
 type alias Model =
-    List String
+    List Tag.Model
+
+
+empty : Model
+empty =
+    []
+
+
+create : List String -> Model
+create tags =
+    List.map Tag.create tags
 
 
 type Msg
     = Add String
-    | Remove String
-    | Pop
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Add todo ->
-            todo :: model
-
-        Remove todo ->
-            filter (\t -> t == todo) model
-
-        Pop ->
-            let
-                rest =
-                    tail model
-            in
-                case rest of
-                    Just x ->
-                        x
-
-                    Nothing ->
-                        []
-
-
-tagToList : String -> Html a
-tagToList tag =
-    li [] [ text tag ]
+        Add tagName ->
+            Tag.create tagName :: model
 
 
 view : Model -> Html a
 view model =
     ul []
-        (map tagToList model)
+        (map (\tag -> li [] [ text tag.name ]) model)

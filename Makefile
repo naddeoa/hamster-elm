@@ -1,4 +1,5 @@
 
+default: elm run
 
 elm:
 	elm make src/elm/* --output build/elm/bundle.js

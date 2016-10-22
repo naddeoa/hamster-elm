@@ -13,45 +13,12 @@ type alias Model =
 
 
 type Msg
-    = PopFirst
-    | PopSecond
-    | Swap
-    | Reset
-
-
-update : Msg -> Model -> Model
-update msg model =
-    case msg of
-        PopFirst ->
-            { model
-                | model1 = TagList.update TagList.Pop model.model1
-            }
-
-        PopSecond ->
-            { model
-                | model2 = TagList.update TagList.Pop model.model2
-            }
-
-        Swap ->
-            let
-                newModel2 =
-                    model.model1
-
-                newModel1 =
-                    model.model2
-            in
-                { model
-                    | model1 = newModel1
-                    , model2 = newModel2
-                }
-
-        Reset ->
-            init
+    = Add
 
 
 init : Model
 init =
-    Model [ "a", "b", "c" ] [ "sticks" ]
+    Model (TagList.create [ "a", "b", "c" ]) (TagList.create [ "sticks" ])
 
 
 view : Model -> Html Msg
@@ -59,15 +26,10 @@ view model =
     div []
         [ TagList.view model.model1
         , TagList.view model.model2
-        , button [ onClick PopFirst ] [ text "Pop from first list" ]
-        , button [ onClick Swap ] [ text "Swap the lists" ]
-        , button [ onClick Reset ] [ text "Reset" ]
+        , button [ onClick Add ] [ text "Pop from first list" ]
         ]
 
 
+main : Html Msg
 main =
-    Html.App.beginnerProgram
-        { model = init
-        , view = view
-        , update = update
-        }
+    view init
