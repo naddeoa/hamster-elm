@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html, div, text, button)
 import Html.Events exposing (onClick)
+import Html.App
 import TagList
 
 
@@ -14,10 +15,12 @@ type alias Model =
 type Msg
     = PopFirst
     | PopSecond
+    | Swap
+    | Reset
 
 
-updateModel : Msg -> Model -> Model
-updateModel msg model =
+update : Msg -> Model -> Model
+update msg model =
     case msg of
         PopFirst ->
             { model
@@ -29,10 +32,26 @@ updateModel msg model =
                 | model2 = TagList.update TagList.Pop model.model2
             }
 
+        Swap ->
+            let
+                newModel2 =
+                    model.model1
+
+                newModel1 =
+                    model.model2
+            in
+                { model
+                    | model1 = newModel1
+                    , model2 = newModel2
+                }
+
+        Reset ->
+            init
+
 
 init : Model
 init =
-    Model [ "fish" ] [ "sticks" ]
+    Model [ "a", "b", "c" ] [ "sticks" ]
 
 
 view : Model -> Html Msg
@@ -40,17 +59,15 @@ view model =
     div []
         [ TagList.view model.model1
         , TagList.view model.model2
+        , button [ onClick PopFirst ] [ text "Pop from first list" ]
+        , button [ onClick Swap ] [ text "Swap the lists" ]
+        , button [ onClick Reset ] [ text "Reset" ]
         ]
 
 
-type Msgs
-    = Msg
-    | TagList.Msg
-
-
-main : Html Msg
 main =
-    div []
-        [ view init
-        , button [] [ text "Pop from first list" ]
-        ]
+    Html.App.beginnerProgram
+        { model = init
+        , view = view
+        , update = update
+        }

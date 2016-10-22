@@ -41,22 +41,9 @@ update msg model =
                         []
 
 
-
--- TODO make use
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
-
-
 tagToList : String -> Html a
 tagToList tag =
     li [] [ text tag ]
-
-
-
--- Just like the render method
 
 
 view : Model -> Html a

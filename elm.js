@@ -7444,6 +7444,107 @@ var _elm_lang$html$Html_App$beginnerProgram = function (_p1) {
 };
 var _elm_lang$html$Html_App$map = _elm_lang$virtual_dom$VirtualDom$map;
 
+var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode_ops[':='], 'keyCode', _elm_lang$core$Json_Decode$int);
+var _elm_lang$html$Html_Events$targetChecked = A2(
+	_elm_lang$core$Json_Decode$at,
+	_elm_lang$core$Native_List.fromArray(
+		['target', 'checked']),
+	_elm_lang$core$Json_Decode$bool);
+var _elm_lang$html$Html_Events$targetValue = A2(
+	_elm_lang$core$Json_Decode$at,
+	_elm_lang$core$Native_List.fromArray(
+		['target', 'value']),
+	_elm_lang$core$Json_Decode$string);
+var _elm_lang$html$Html_Events$defaultOptions = _elm_lang$virtual_dom$VirtualDom$defaultOptions;
+var _elm_lang$html$Html_Events$onWithOptions = _elm_lang$virtual_dom$VirtualDom$onWithOptions;
+var _elm_lang$html$Html_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
+var _elm_lang$html$Html_Events$onFocus = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'focus',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onBlur = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'blur',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onSubmitOptions = _elm_lang$core$Native_Utils.update(
+	_elm_lang$html$Html_Events$defaultOptions,
+	{preventDefault: true});
+var _elm_lang$html$Html_Events$onSubmit = function (msg) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'submit',
+		_elm_lang$html$Html_Events$onSubmitOptions,
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onCheck = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetChecked));
+};
+var _elm_lang$html$Html_Events$onInput = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'input',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetValue));
+};
+var _elm_lang$html$Html_Events$onMouseOut = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseout',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseOver = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseover',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseLeave = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseleave',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseEnter = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseenter',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseup',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseDown = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mousedown',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onDoubleClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'dblclick',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'click',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$Options = F2(
+	function (a, b) {
+		return {stopPropagation: a, preventDefault: b};
+	});
+
 var _user$project$TagList$tagToList = function (tag) {
 	return A2(
 		_elm_lang$html$Html$li,
@@ -7460,9 +7561,6 @@ var _user$project$TagList$view = function (model) {
 		_elm_lang$core$Native_List.fromArray(
 			[]),
 		A2(_elm_lang$core$List$map, _user$project$TagList$tagToList, model));
-};
-var _user$project$TagList$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$TagList$update = F2(
 	function (msg, model) {
@@ -7496,9 +7594,72 @@ var _user$project$TagList$Add = function (a) {
 	return {ctor: 'Add', _0: a};
 };
 
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'PopFirst':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						model1: A2(_user$project$TagList$update, _user$project$TagList$Pop, model.model1)
+					});
+			case 'PopSecond':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						model2: A2(_user$project$TagList$update, _user$project$TagList$Pop, model.model2)
+					});
+			default:
+				var newModel1 = model.model2;
+				var newModel2 = model.model1;
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{model1: newModel1, model2: newModel2});
+		}
+	});
+var _user$project$Main$Model = F2(
+	function (a, b) {
+		return {model1: a, model2: b};
+	});
+var _user$project$Main$init = A2(
+	_user$project$Main$Model,
+	_elm_lang$core$Native_List.fromArray(
+		['a', 'b', 'c']),
+	_elm_lang$core$Native_List.fromArray(
+		['sticks']));
+var _user$project$Main$Swap = {ctor: 'Swap'};
+var _user$project$Main$PopSecond = {ctor: 'PopSecond'};
+var _user$project$Main$PopFirst = {ctor: 'PopFirst'};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$TagList$view(model.model1),
+				_user$project$TagList$view(model.model2),
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(_user$project$Main$PopFirst)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Pop from first list')
+					]))
+			]));
+};
+var _user$project$Main$main = {
+	main: _elm_lang$html$Html_App$beginnerProgram(
+		{model: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update})
+};
+
 var Elm = {};
-Elm['TagList'] = Elm['TagList'] || {};
-_elm_lang$core$Native_Platform.addPublicModule(Elm['TagList'], 'TagList', typeof _user$project$TagList$main === 'undefined' ? null : _user$project$TagList$main);
+Elm['Main'] = Elm['Main'] || {};
+_elm_lang$core$Native_Platform.addPublicModule(Elm['Main'], 'Main', typeof _user$project$Main$main === 'undefined' ? null : _user$project$Main$main);
 
 if (typeof define === "function" && define['amd'])
 {
