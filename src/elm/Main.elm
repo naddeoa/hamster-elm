@@ -45,7 +45,7 @@ view model =
 
 type Msgs
     = Msg
-    | TagList.Msg
+    | TagList.Msg -- this isn't showing up as a syntax error to the compiler, even thou IntelliJ catches it
 
 
 main : Html Msg
