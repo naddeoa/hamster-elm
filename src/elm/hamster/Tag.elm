@@ -1,15 +1,16 @@
 module Tag exposing (..)
 
 import Html exposing (Html, text, ul, li)
-import Json.Decode as Json exposing ((:=), string, int, object2)
+import Json.Decode as Json exposing ((:=), string, int, object2, maybe)
 import Json.Encode as Encode exposing (Value)
 import HamsterAPI as API exposing (..)
+import Maybe exposing (withDefault, map)
 
 
 {-| Represents a tag in Hamster
 -}
 type alias Tag =
-    { id : Int
+    { id : Maybe Int
     , name : String
     }
 
@@ -17,7 +18,14 @@ type alias Tag =
 encode : Tag -> Value
 encode tag =
     Encode.object
-        [ ( "id", Encode.int tag.id )
+        [ ( "id"
+          , case tag.id of
+                Nothing ->
+                    Encode.null
+
+                Just id ->
+                    Encode.int id
+          )
         , ( "name", Encode.string tag.name )
         ]
 
@@ -25,11 +33,15 @@ encode tag =
 decode : Json.Decoder (Tag)
 decode =
     object2 Tag
-        ("id" := int)
+        ("id" := maybe int)
         ("name" := string)
 
 
 toHtml : Tag -> Html a
 toHtml tag =
-    li []
-        [ text (tag.name ++ " (" ++ toString (tag.id) ++ ")") ]
+    let
+        id =
+            withDefault "" (map (\id -> " (" ++ (toString id) ++ ")") tag.id)
+    in
+        li []
+            [ text (tag.name ++ id) ]

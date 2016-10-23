@@ -1,6 +1,5 @@
-module HamsterClient exposing (..)
+module HamsterClient exposing (call)
 
-import GetTags
 import Http
 import Task
 import HamsterAPI as API exposing (HamsterResponse, ResponseMsg(Error), ResponseMsg(Success), ResponseMsg)
@@ -8,8 +7,7 @@ import Json.Decode as Json exposing ((:=), string, int, object2)
 import Html exposing (Html, text, ul, li)
 import Html.App
 import HamsterAPI as API exposing (HamsterRequest)
-import GetTags
-import GetActivities
+import HamsterCalls
 
 
 {-| Perform a call to the Hamster REST endpoint using the supplied `Json.Decoder`.
@@ -71,6 +69,6 @@ main =
     Html.App.program
         { update = update
         , view = view
-        , init = init GetTags.hamsterCall
+        , init = init (HamsterCalls.getTags ())
         , subscriptions = subscriptions
         }
