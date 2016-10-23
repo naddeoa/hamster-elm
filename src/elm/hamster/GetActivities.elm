@@ -5,9 +5,6 @@ import Json.Decode as Json exposing ((:=), string, object2)
 import HamsterAPI as API exposing (..)
 
 
--- Types in the payload
-
-
 type alias Activity =
     { activity : String
     , category : String
@@ -20,7 +17,7 @@ type alias Activities =
 
 hamsterCall : HamsterCall Activities
 hamsterCall =
-    HamsterCall decode view "activities/"
+    HamsterCall decode toHtml "activities/"
 
 
 decode : Json.Decoder Activities
@@ -34,7 +31,7 @@ decode =
         Json.list activity
 
 
-view : Activities -> Html ResponseMsg
-view activities =
+toHtml : Activities -> Html (ResponseMsg Activities)
+toHtml activities =
     ul []
-        (List.map (\activity -> li [] [ text (activity.activity ++ activity.category) ]) activities)
+        (List.map (\activity -> li [] [ text (activity.activity ++ ", " ++ activity.category) ]) activities)

@@ -23,10 +23,11 @@ import Http
 type alias HamsterResponse payload =
     { errors : List String
     , data : Maybe payload
+    , toHtml : payload -> Html (ResponseMsg payload)
     }
 
 emptyResponse: HamsterResponse payload
-emptyResponse = HamsterResponse [] Nothing
+emptyResponse = HamsterResponse [] Nothing (\payload -> text "")
 
 {-| This is what the call files in this package return and what the client expects to consume.
 It contains everything that the client needs to know about how to make a call to a method of the
@@ -34,15 +35,15 @@ Hamster REST API.
 -}
 type alias HamsterCall payload =
     { decoder : Json.Decoder payload
-    , toHtml : payload -> Html ResponseMsg
+    , toHtml : payload -> Html (ResponseMsg payload)
     , method : String
     }
 
 {-| This is the message that is used to handle http responses in the client.
 -}
 type ResponseMsg payload
-    = Success payload
-    | Error Http.Error
+    = Success (HamsterCall payload) payload
+    | Error (HamsterCall payload) Http.Error
 
 
 {-| Helper function that returns the url of the Hamster API appended with the argument.

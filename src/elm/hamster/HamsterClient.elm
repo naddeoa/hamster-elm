@@ -9,13 +9,14 @@ import Html exposing (Html, text, ul, li)
 import Html.App
 import HamsterAPI as API exposing (HamsterCall)
 import GetTags
+import GetActivities
 
 
 {-| Perform a call to the Hamster REST endpoint using the supplied `Json.Decoder`.
 -}
 call : HamsterCall payload -> Cmd (ResponseMsg payload)
 call hamsterCall =
-    Task.perform Error Success (Http.get hamsterCall.decoder (API.endpoint hamsterCall.method))
+    Task.perform (Error hamsterCall) (Success hamsterCall) (Http.get hamsterCall.decoder (API.endpoint hamsterCall.method))
 
 
 
@@ -25,22 +26,22 @@ call hamsterCall =
 update : ResponseMsg payload -> HamsterResponse payload -> ( HamsterResponse payload, Cmd (ResponseMsg payload) )
 update msg response =
     case msg of
-        Success decodedTags ->
-            ( HamsterResponse [] (Just decodedTags), Cmd.none )
+        Success hamsterCall decodedTags ->
+            ( HamsterResponse [] (Just decodedTags) hamsterCall.toHtml, Cmd.none )
 
-        Error err ->
+        Error hamsterCall err ->
             case err of
                 Http.NetworkError ->
-                    ( HamsterResponse [ "network error" ] Nothing, Cmd.none )
+                    ( HamsterResponse [ "network error" ] Nothing hamsterCall.toHtml, Cmd.none )
 
                 Http.Timeout ->
-                    ( HamsterResponse [ "network timeout" ] Nothing, Cmd.none )
+                    ( HamsterResponse [ "network timeout" ] Nothing hamsterCall.toHtml, Cmd.none )
 
                 Http.UnexpectedPayload payload ->
-                    ( HamsterResponse [ payload ] Nothing, Cmd.none )
+                    ( HamsterResponse [ payload ] Nothing hamsterCall.toHtml, Cmd.none )
 
                 Http.BadResponse status response ->
-                    ( HamsterResponse [ "Bad response", toString (status), response ] Nothing, Cmd.none )
+                    ( HamsterResponse [ "Bad response", toString (status), response ] Nothing hamsterCall.toHtml, Cmd.none )
 
 
 view : HamsterResponse payload -> Html (ResponseMsg payload)
@@ -51,7 +52,7 @@ view response =
                 (List.map (\error -> li [] [ text error ]) response.errors)
 
         Just data ->
-            text "worked"
+            response.toHtml data
 
 
 init : HamsterCall payload -> ( HamsterResponse payload, Cmd (ResponseMsg payload) )
@@ -70,6 +71,6 @@ main =
     Html.App.program
         { update = update
         , view = view
-        , init = init GetTags.hamsterCall
+        , init = init GetActivities.hamsterCall
         , subscriptions = subscriptions
         }
