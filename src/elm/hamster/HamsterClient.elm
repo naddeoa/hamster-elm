@@ -7,14 +7,14 @@ import HamsterAPI as API exposing (HamsterResponse, ResponseMsg(Error), Response
 import Json.Decode as Json exposing ((:=), string, int, object2)
 import Html exposing (Html, text, ul, li)
 import Html.App
-import HamsterAPI as API exposing (HamsterCall)
+import HamsterAPI as API exposing (HamsterRequest)
 import GetTags
 import GetActivities
 
 
 {-| Perform a call to the Hamster REST endpoint using the supplied `Json.Decoder`.
 -}
-call : HamsterCall payload -> Cmd (ResponseMsg payload)
+call : HamsterRequest payload -> Cmd (ResponseMsg payload)
 call hamsterCall =
     Task.perform (Error hamsterCall) (Success hamsterCall) (Http.get hamsterCall.decoder (API.endpoint hamsterCall.method))
 
@@ -55,7 +55,7 @@ view response =
             response.toHtml data
 
 
-init : HamsterCall payload -> ( HamsterResponse payload, Cmd (ResponseMsg payload) )
+init : HamsterRequest payload -> ( HamsterResponse payload, Cmd (ResponseMsg payload) )
 init hamsterCall =
     ( API.emptyResponse
     , call hamsterCall
@@ -71,6 +71,6 @@ main =
     Html.App.program
         { update = update
         , view = view
-        , init = init GetActivities.hamsterCall
+        , init = init GetTags.hamsterCall
         , subscriptions = subscriptions
         }

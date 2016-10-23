@@ -37,7 +37,7 @@ emptyResponse =
 It contains everything that the client needs to know about how to make a call to a method of the
 Hamster REST API.
 -}
-type alias HamsterCall payload =
+type alias HamsterRequest payload =
     { decoder : Json.Decoder payload
     , toHtml : payload -> Html (ResponseMsg payload)
     , method : String
@@ -48,8 +48,8 @@ type alias HamsterCall payload =
 {-| This is the message that is used to handle http responses in the client.
 -}
 type ResponseMsg payload
-    = Success (HamsterCall payload) payload
-    | Error (HamsterCall payload) Http.Error
+    = Success (HamsterRequest payload) payload
+    | Error (HamsterRequest payload) Http.Error
 
 
 {-| Helper function that returns the url of the Hamster API appended with the argument.
