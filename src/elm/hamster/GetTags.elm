@@ -1,4 +1,4 @@
-module Hamster exposing (..)
+module GetTags exposing (..)
 
 import Html exposing (Html, text, ul, li)
 import Http
@@ -6,6 +6,7 @@ import Json.Decode as Json exposing ((:=), string, int, object2)
 import Task exposing (..)
 import Dict
 import Html.App
+import HamsterAPI as API exposing (HamsterResponse)
 
 
 -- Types in the payload
@@ -17,11 +18,21 @@ type alias Tag =
     }
 
 
+type alias Tags =
+    List Tag
+
+
+type alias HamsterCall a =
+    { errors : List String
+    , data : a
+    }
+
+
 
 -- Decoder for JSON
 
 
-decodeTags : Json.Decoder (List Tag)
+decodeTags : Json.Decoder (Tags)
 decodeTags =
     let
         tag =
@@ -33,7 +44,7 @@ decodeTags =
 
 
 type Msg
-    = Success (List Tag)
+    = Success (Tags)
     | Error Http.Error
 
 
@@ -43,21 +54,21 @@ type Msg
 
 getTags : () -> Cmd Msg
 getTags () =
-    Task.perform Error Success (Http.get decodeTags "http://localhost:3000/tags")
-
-
-init : () -> ( List Tag, Cmd Msg )
-init () =
-    ( [ Tag 0 "Fish" ]
-    , getTags ()
-    )
+    Task.perform Error Success (Http.get decodeTags (API.endpoint "tags"))
 
 
 
 -- Stuff just for the main test
 
 
-update : Msg -> List Tag -> ( List Tag, Cmd Msg )
+init : () -> ( Tags, Cmd Msg )
+init () =
+    ( []
+    , getTags ()
+    )
+
+
+update : Msg -> Tags -> ( Tags, Cmd Msg )
 update msg tags =
     case msg of
         Success decodedTags ->
@@ -78,13 +89,13 @@ update msg tags =
                     ( [ Tag -1 "bad response" ], Cmd.none )
 
 
-view : List Tag -> Html Msg
+view : Tags -> Html Msg
 view tags =
     ul []
-        (List.map (\tag -> li [] [text tag.name]) tags)
+        (List.map (\tag -> li [] [ text tag.name ]) tags)
 
 
-subscriptions : List Tag -> Sub Msg
+subscriptions : Tags -> Sub Msg
 subscriptions model =
     Sub.none
 
