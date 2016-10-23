@@ -9,8 +9,17 @@
     <script src="../../build/elm/bundle.js"></script>
     <script>
         var Elm = require('../../build/elm/bundle.js');
+//        var Hamster = require("../js/hamster.js");
+        console.log(__dirname);
         var container = document.getElementById('container');
         var app = Elm.Main.embed(container);
+
+//        var hamster = new Hamster();
+//        app.ports.requestTags.subscribe(function(){
+//            hamster.getTags().then(function(tags){
+//                apps.ports.receiveTags.send(tags);
+//            });
+//        })
     </script>
 
   </body>

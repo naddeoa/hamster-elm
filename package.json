@@ -9,10 +9,10 @@
   "author": "Anthony Naddeo",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^1.4.3"
   },
   "dependencies": {
     "dbus-native": "^0.2.0",
-    "promise": "^7.1.1"
+    "promise": "^7.1.1",
+    "electron": "^1.4.3"
   }
 }
