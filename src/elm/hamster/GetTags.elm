@@ -2,7 +2,7 @@ module GetTags exposing (..)
 
 import Html exposing (Html, text, ul, li)
 import Json.Decode as Json exposing ((:=), string, int, object2)
-import HamsterAPI as API exposing (HamsterResponse)
+import HamsterAPI as API exposing (..)
 
 
 -- Types in the payload
@@ -18,7 +18,7 @@ type alias Tags =
     List Tag
 
 
-hamsterCall : API.HamsterCall Tags
+hamsterCall : HamsterCall Tags
 hamsterCall =
     API.HamsterCall decode view "tags"
 
@@ -34,7 +34,7 @@ decode =
         Json.list tag
 
 
-view : Tags -> Html API.ResponseMsg
+view : Tags -> Html ResponseMsg
 view tags =
     ul []
         (List.map (\tag -> li [] [ text tag.name ]) tags)
