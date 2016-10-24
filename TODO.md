@@ -3,7 +3,7 @@ Remaining work
 ===
 
 ## MVP
-* Create an activity input widet
-* Create an updateActivity call
+* ~~Create an updateActivity call~~
+* Create an activity input widget
 * Create a stop tracking widget
 * Create a stopTracking call

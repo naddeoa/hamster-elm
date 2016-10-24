@@ -1,0 +1,67 @@
+module Main exposing (..)
+
+import Http
+import Task
+import HamsterAPI as API exposing (HamsterResponse, ResponseMsg(Error), ResponseMsg(Success), ResponseMsg)
+import Json.Decode as Json exposing ((:=), string, int, object2)
+import Html exposing (Html, text, ul, li)
+import Html.App
+import HamsterAPI as API exposing (HamsterRequest)
+import HamsterCalls
+import HamsterClient exposing (call)
+
+
+-- Stuff just for the main test
+
+
+update : ResponseMsg payload -> HamsterResponse payload -> ( HamsterResponse payload, Cmd (ResponseMsg payload) )
+update msg response =
+    case msg of
+        Success hamsterCall decodedTags ->
+            ( HamsterResponse [] (Just decodedTags) hamsterCall.toHtml, Cmd.none )
+
+        Error hamsterCall err ->
+            case err of
+                Http.NetworkError ->
+                    ( HamsterResponse [ "network error" ] Nothing hamsterCall.toHtml, Cmd.none )
+
+                Http.Timeout ->
+                    ( HamsterResponse [ "network timeout" ] Nothing hamsterCall.toHtml, Cmd.none )
+
+                Http.UnexpectedPayload payload ->
+                    ( HamsterResponse [ "UnexpectedPayload ", payload ] Nothing hamsterCall.toHtml, Cmd.none )
+
+                Http.BadResponse status response ->
+                    ( HamsterResponse [ "BadResponse", toString (status), response ] Nothing hamsterCall.toHtml, Cmd.none )
+
+
+view : HamsterResponse payload -> Html (ResponseMsg payload)
+view response =
+    case response.data of
+        Nothing ->
+            ul []
+                (List.map (\error -> li [] [ text error ]) response.errors)
+
+        Just data ->
+            response.toHtml data
+
+
+init : HamsterRequest payload -> ( HamsterResponse payload, Cmd (ResponseMsg payload) )
+init hamsterCall =
+    ( API.emptyResponse
+    , call hamsterCall
+    )
+
+
+subscriptions : HamsterResponse payload -> Sub (ResponseMsg payload)
+subscriptions response =
+    Sub.none
+
+
+main =
+    Html.App.program
+        { update = update
+        , view = view
+        , init = init (HamsterCalls.getTodaysFacts ())
+        , subscriptions = subscriptions
+        }
