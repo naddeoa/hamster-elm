@@ -28,9 +28,19 @@ type alias HamsterResponse payload =
     }
 
 
+{-| Reference to an empty response object
+-}
 emptyResponse : HamsterResponse payload
 emptyResponse =
     HamsterResponse [] Nothing (\payload -> text "")
+
+
+{-| Create a response object that contains the given payload, without any errors
+and with a simple toString function for its html renderer.
+-}
+responseOfPayload : payload -> HamsterResponse payload
+responseOfPayload payload =
+    HamsterResponse [] (Just payload) (\payload -> text (toString payload))
 
 
 {-| This is what the call files in this package return and what the client expects to consume.
