@@ -10,6 +10,7 @@ the various Hamster API calls that can be made.
 import HamsterAPI as API exposing (..)
 import Activities exposing (Activities)
 import Tags exposing (Tags)
+import Facts exposing (Facts)
 
 
 {-| Get a list of `Activity` from Hamster. What comes back
@@ -27,3 +28,7 @@ getTags : () -> HamsterRequest Tags
 getTags () =
     API.HamsterRequest Tags.decode Tags.toHtml "tags" Tags.encode
 
+
+getTodaysFacts : () -> HamsterRequest Facts
+getTodaysFacts () =
+    API.HamsterRequest Facts.decode Facts.toHtml "facts/today" Facts.encode

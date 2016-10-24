@@ -36,10 +36,10 @@ update msg response =
                     ( HamsterResponse [ "network timeout" ] Nothing hamsterCall.toHtml, Cmd.none )
 
                 Http.UnexpectedPayload payload ->
-                    ( HamsterResponse [ payload ] Nothing hamsterCall.toHtml, Cmd.none )
+                    ( HamsterResponse [ "UnexpectedPayload ", payload ] Nothing hamsterCall.toHtml, Cmd.none )
 
                 Http.BadResponse status response ->
-                    ( HamsterResponse [ "Bad response", toString (status), response ] Nothing hamsterCall.toHtml, Cmd.none )
+                    ( HamsterResponse [ "BadResponse", toString (status), response ] Nothing hamsterCall.toHtml, Cmd.none )
 
 
 view : HamsterResponse payload -> Html (ResponseMsg payload)
@@ -69,6 +69,6 @@ main =
     Html.App.program
         { update = update
         , view = view
-        , init = init (HamsterCalls.getTags ())
+        , init = init (HamsterCalls.getTodaysFacts ())
         , subscriptions = subscriptions
         }

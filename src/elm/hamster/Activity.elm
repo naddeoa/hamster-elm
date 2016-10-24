@@ -1,4 +1,4 @@
-module Activity exposing (..)
+module Activity exposing (Activity, decode, encode, toHamsterQuery, toHtml)
 
 import Html exposing (Html, text, ul, li)
 import Json.Decode as Json exposing ((:=), string, object2)
@@ -25,6 +25,11 @@ encode activity =
         [ ( "name", Encode.string activity.name )
         , ( "category", Encode.string activity.category )
         ]
+
+
+toHamsterQuery : Activity -> String
+toHamsterQuery activity =
+    activity.name ++ "@" ++ activity.category
 
 
 toHtml : Activity -> Html a

@@ -1,4 +1,4 @@
-module Tag exposing (..)
+module Tag exposing (Tag, decode, encode, toHamsterQuery, toHtml)
 
 import Html exposing (Html, text, ul, li)
 import Json.Decode as Json exposing ((:=), string, int, object2, maybe)
@@ -13,6 +13,13 @@ type alias Tag =
     { id : Maybe Int
     , name : String
     }
+
+
+decode : Json.Decoder Tag
+decode =
+    object2 Tag
+        ("id" := maybe int)
+        ("name" := string)
 
 
 encode : Tag -> Value
@@ -30,11 +37,9 @@ encode tag =
         ]
 
 
-decode : Json.Decoder (Tag)
-decode =
-    object2 Tag
-        ("id" := maybe int)
-        ("name" := string)
+toHamsterQuery : Tag -> String
+toHamsterQuery tag =
+    "#" ++ tag.name
 
 
 toHtml : Tag -> Html a
