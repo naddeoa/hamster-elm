@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import HamsterAPI exposing (HamsterResponse, ResponseMsg)
+import HamsterAPI exposing (HamsterResponse, HamsterMsg)
 import Html exposing (Html, div, text, input, h1, section, ul, li)
 import Html.App
 import HamsterClient
@@ -15,7 +15,7 @@ type alias Model =
 
 
 type Msg
-    = CallFinished (ResponseMsg Facts)
+    = CallFinished (HamsterMsg Facts)
 
 
 view : Model -> Html Msg
@@ -42,14 +42,14 @@ view model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        CallFinished responseMsg ->
+        CallFinished hamsterMsg ->
             let
-                ( updatedFactsResponse, hamsterCmd ) =
-                    HamsterClient.update responseMsg (HamsterAPI.responseOfPayload model.facts)
+                ( response, hamsterCmd ) =
+                    HamsterClient.handle hamsterMsg
             in
-                case updatedFactsResponse.data of
+                case response.data of
                     Nothing ->
-                        ( Model [] updatedFactsResponse.errors, Cmd.none )
+                        ( Model [] response.errors, Cmd.none )
 
                     Just data ->
                         ( Model data [], Cmd.none )

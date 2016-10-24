@@ -24,7 +24,7 @@ import Http
 type alias HamsterResponse payload =
     { errors : List String
     , data : Maybe payload
-    , toHtml : payload -> Html (ResponseMsg payload)
+    , toHtml : payload -> Html (HamsterMsg payload)
     }
 
 
@@ -49,7 +49,7 @@ Hamster REST API.
 -}
 type alias HamsterRequest payload =
     { decoder : Json.Decoder payload
-    , toHtml : payload -> Html (ResponseMsg payload)
+    , toHtml : payload -> Html (HamsterMsg payload)
     , method : String
     , toJsonValue : payload -> Value
     }
@@ -57,7 +57,7 @@ type alias HamsterRequest payload =
 
 {-| This is the message that is used to handle http responses in the client.
 -}
-type ResponseMsg payload
+type HamsterMsg payload
     = Success (HamsterRequest payload) payload
     | Error (HamsterRequest payload) Http.Error
 

@@ -1,8 +1,8 @@
-module HamsterClient exposing (call, update)
+module HamsterClient exposing (call, handle)
 
 import Http
 import Task
-import HamsterAPI as API exposing (HamsterResponse, ResponseMsg(Error), ResponseMsg(Success), ResponseMsg)
+import HamsterAPI as API exposing (HamsterResponse, HamsterMsg(Error), HamsterMsg(Success), HamsterMsg)
 import Json.Decode as Json exposing ((:=), string, int, object2)
 import Html exposing (Html, text, ul, li)
 import Html.App
@@ -10,8 +10,10 @@ import HamsterAPI as API exposing (HamsterRequest)
 import HamsterCalls
 
 
-update : ResponseMsg payload -> HamsterResponse payload -> ( HamsterResponse payload, Cmd (ResponseMsg payload) )
-update msg response =
+{-| Handle a call response from the Hamster API.
+-}
+handle : HamsterMsg payload -> ( HamsterResponse payload, Cmd (HamsterMsg payload) )
+handle msg =
     case msg of
         Success hamsterCall payload ->
             ( HamsterResponse [] (Just payload) hamsterCall.toHtml, Cmd.none )
@@ -33,6 +35,6 @@ update msg response =
 
 {-| Perform a call to the Hamster REST endpoint using the supplied `Json.Decoder`.
 -}
-call : HamsterRequest payload -> Cmd (ResponseMsg payload)
-call hamsterCall =
-    Task.perform (Error hamsterCall) (Success hamsterCall) (Http.get hamsterCall.decoder (API.endpoint hamsterCall.method))
+call : HamsterRequest payload -> Cmd (HamsterMsg payload)
+call hamsterRequest =
+    Task.perform (Error hamsterRequest) (Success hamsterRequest) (Http.get hamsterRequest.decoder (API.endpoint hamsterRequest.method))

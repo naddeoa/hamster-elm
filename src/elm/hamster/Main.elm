@@ -2,19 +2,17 @@ module Main exposing (..)
 
 import Http
 import Task
-import HamsterAPI as API exposing (HamsterResponse, ResponseMsg(Error), ResponseMsg(Success), ResponseMsg)
+import HamsterAPI as API exposing (HamsterResponse, HamsterMsg(Error), HamsterMsg(Success), HamsterMsg)
 import Json.Decode as Json exposing ((:=), string, int, object2)
 import Html exposing (Html, text, ul, li)
 import Html.App
 import HamsterAPI as API exposing (HamsterRequest)
 import HamsterCalls
-import HamsterClient exposing (call, update)
+import HamsterClient exposing (call, handle)
+import Facts exposing (Facts)
 
 
--- Stuff just for the main test
-
-
-view : HamsterResponse payload -> Html (ResponseMsg payload)
+view : HamsterResponse payload -> Html (HamsterMsg payload)
 view response =
     case response.data of
         Nothing ->
@@ -25,12 +23,25 @@ view response =
             response.toHtml data
 
 
-init : HamsterRequest payload -> ( HamsterResponse payload, Cmd (ResponseMsg payload) )
-init hamsterCall =
-    ( API.emptyResponse, call hamsterCall )
+update : HamsterMsg payload -> HamsterResponse payload -> ( HamsterResponse payload, Cmd (HamsterMsg payload) )
+update msg model =
+    let
+        ( response, cmd ) =
+            handle msg
+    in
+        ( response, Cmd.none )
 
 
-subscriptions : HamsterResponse payload -> Sub (ResponseMsg payload)
+model : HamsterResponse payload
+model =
+    API.emptyResponse
+
+
+init =
+    ( API.emptyResponse, (call (HamsterCalls.getTodaysFacts ())) )
+
+
+subscriptions : HamsterResponse payload -> Sub (HamsterMsg payload)
 subscriptions response =
     Sub.none
 
@@ -39,6 +50,6 @@ main =
     Html.App.program
         { update = update
         , view = view
-        , init = init (HamsterCalls.getTodaysFacts ())
+        , init = init
         , subscriptions = subscriptions
         }
