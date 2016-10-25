@@ -38,7 +38,7 @@ model =
 
 
 init =
-    ( API.emptyResponse, (call (HamsterCalls.getTodaysFacts ())) )
+    ( API.emptyResponse, (call (HamsterCalls.getActivities "")) )
 
 
 subscriptions : HamsterResponse payload -> Sub (HamsterMsg payload)

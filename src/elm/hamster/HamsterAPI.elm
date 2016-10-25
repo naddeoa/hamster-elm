@@ -52,7 +52,27 @@ type alias HamsterRequest payload =
     , toHtml : payload -> Html (HamsterMsg payload)
     , method : String
     , toJsonValue : payload -> Value
+    , verb : HttpMethod
     }
+
+{-| Enumeration of the supported verbs in the Hamster API
+-}
+type HttpMethod
+    = POST
+    | GET
+
+{-| Convert an `HttpMethod` into its string form. Useful for actually making requests with them.
+
+    getVerb POST == "POST"
+-}
+getVerb : HttpMethod -> String
+getVerb method =
+    case method of
+        POST ->
+            "POST"
+
+        GET ->
+            "GET"
 
 
 {-| This is the message that is used to handle http responses in the client.

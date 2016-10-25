@@ -1,12 +1,12 @@
 module HamsterClient exposing (call, handle)
 
-import Http
+import Http exposing (empty)
 import Task
 import HamsterAPI as API exposing (HamsterResponse, HamsterMsg(Error), HamsterMsg(Success), HamsterMsg)
 import Json.Decode as Json exposing ((:=), string, int, object2)
 import Html exposing (Html, text, ul, li)
 import Html.App
-import HamsterAPI as API exposing (HamsterRequest)
+import HamsterAPI as API exposing (HamsterRequest, HttpMethod(GET), HttpMethod(POST))
 import HamsterCalls
 
 
@@ -37,4 +37,13 @@ handle msg =
 -}
 call : HamsterRequest payload -> Cmd (HamsterMsg payload)
 call hamsterRequest =
-    Task.perform (Error hamsterRequest) (Success hamsterRequest) (Http.get hamsterRequest.decoder (API.endpoint hamsterRequest.method))
+    let
+        request =
+            case hamsterRequest.verb of
+                POST ->
+                    Http.post hamsterRequest.decoder (API.endpoint hamsterRequest.method) empty
+
+                GET ->
+                    Http.get hamsterRequest.decoder (API.endpoint hamsterRequest.method)
+    in
+        Task.perform (Error hamsterRequest) (Success hamsterRequest) request
