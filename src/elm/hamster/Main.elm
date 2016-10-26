@@ -51,9 +51,10 @@ init =
             [ Tag Nothing "elm" ]
 
         fact =
-            Fact 0 (Date.fromTime 1477422711) (Date.fromTime 0) 0 "my description" activity tags
+            Fact Nothing (Date.fromTime 1477422711) (Date.fromTime 0) 0 "my description" activity tags
     in
-        ( API.emptyResponse, (call (HamsterCalls.createFact fact)) )
+--        ( API.emptyResponse, (call (HamsterCalls.createFact fact)) )
+        ( API.emptyResponse, (call (HamsterCalls.getTodaysFacts ())) )
 
 
 subscriptions : HamsterResponse payload -> Sub (HamsterMsg payload)

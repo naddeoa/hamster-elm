@@ -1,7 +1,8 @@
 module Fact exposing (Fact, decode, encode, toHtml, toHamsterQuery)
 
 import Html exposing (Html, text, ul, li)
-import Json.Decode as Json exposing ((:=), string, int, float, list, object1, object7)
+import EncodeExtras exposing (encodeMaybe)
+import Json.Decode as Decode exposing (Decoder, (:=), string, int, float, list, object1, object7, maybe)
 import Json.Encode as Encode exposing (encode, Value)
 import HamsterAPI as API exposing (..)
 import Date exposing (Date, toTime)
@@ -10,7 +11,7 @@ import Activity exposing (Activity)
 
 
 type alias Fact =
-    { id : Int
+    { id : Maybe Int
     , startDate : Date
     , endDate : Date
     , totalSeconds : Int
@@ -20,22 +21,24 @@ type alias Fact =
     }
 
 
-decode : Json.Decoder Fact
+decode : Decoder Fact
 decode =
     object7 Fact
-        ("id" := int)
-        (Json.object1 Date.fromTime ("startEpoch" := float))
-        (Json.object1 Date.fromTime ("endEpoch" := float))
+        ("id" := maybe int)
+        (Decode.object1 Date.fromTime ("startEpoch" := float))
+        (Decode.object1 Date.fromTime ("endEpoch" := float))
         ("totalSeconds" := int)
         ("description" := string)
         ("activity" := Activity.decode)
         ("tags" := Tags.decode)
 
 
+
+
 encode : Fact -> Value
 encode fact =
     Encode.object
-        [ ( "id", Encode.int fact.id )
+        [ ( "id", (encodeMaybe Encode.int fact.id) )
         , ( "startEpoch", Encode.float (Date.toTime fact.startDate) )
         , ( "endEpoch", Encode.float (Date.toTime fact.endDate) )
         , ( "totalSeconds", Encode.int fact.totalSeconds )
