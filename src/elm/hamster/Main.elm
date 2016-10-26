@@ -10,6 +10,11 @@ import HamsterAPI as API exposing (HamsterRequest)
 import HamsterCalls
 import HamsterClient exposing (call, handle)
 import Facts exposing (Facts)
+import Fact exposing (Fact)
+import Activity exposing (Activity)
+import Tags exposing (Tags)
+import Tag exposing (Tag)
+import Date exposing (Date)
 
 
 view : HamsterResponse payload -> Html (HamsterMsg payload)
@@ -38,7 +43,17 @@ model =
 
 
 init =
-    ( API.emptyResponse, (call (HamsterCalls.getActivities "")) )
+    let
+        activity =
+            Activity "writing elm front end" "Work"
+
+        tags =
+            [ Tag Nothing "elm" ]
+
+        fact =
+            Fact 0 (Date.fromTime 1477422711) (Date.fromTime 0) 0 "my description" activity tags
+    in
+        ( API.emptyResponse, (call (HamsterCalls.createFact fact)) )
 
 
 subscriptions : HamsterResponse payload -> Sub (HamsterMsg payload)

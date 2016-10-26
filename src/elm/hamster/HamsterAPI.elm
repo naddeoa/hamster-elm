@@ -16,7 +16,7 @@ module HamsterAPI exposing (..)
 import Json.Decode as Json exposing ((:=), string, int, object2)
 import Json.Encode exposing (Value)
 import Html exposing (Html, text, ul, li)
-import Http
+import Http exposing (Body)
 
 
 {-| Wrapping type for all hamster responses.
@@ -53,6 +53,7 @@ type alias HamsterRequest payload =
     , method : String
     , toJsonValue : payload -> Value
     , verb : HttpMethod
+    , body : Maybe payload
     }
 
 {-| Enumeration of the supported verbs in the Hamster API
