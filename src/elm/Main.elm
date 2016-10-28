@@ -15,11 +15,14 @@ import String
 
 type alias Model =
     { facts : Facts
-    , form :
-        { name : String
-        , category : String
-        , tags : String
-        }
+    , form : Form
+    }
+
+
+type alias Form =
+    { name : String
+    , category : String
+    , tags : String
     }
 
 
@@ -28,15 +31,20 @@ empty =
     Model [] { name = "", category = "", tags = "" }
 
 
+toFact : Form -> Fact
+toFact form =
+    Fact.fromStrings form.name form.category (String.split "," form.tags) 1477606657 0
+
+
 type Msg
     = FetchTodaysFacts
     | FetchedTodaysFacts (HamsterMsg Facts)
-    | CreateFact String
     | CreatedFact (HamsterMsg Fact)
     | Log String String
     | FormNameChanged String
     | FormCategoryChanged String
     | FormTagsChanged String
+    | FormSubmit Form
 
 
 renderFacts : Model -> Html a
@@ -46,7 +54,7 @@ renderFacts model =
             text "Nothing yet. Get to work!"
 
         False ->
-            ul [] (List.map (\fact -> li [] [ Fact.toHtml fact ]) model.facts)
+            ul [] (List.map (\fact -> li [] [ Fact.toHtml fact, text (toString (Date.toTime fact.endDate)) ]) model.facts)
 
 
 textInput : String -> String -> String -> (String -> a) -> Html a
@@ -68,7 +76,7 @@ view model =
     div []
         [ h1 [] [ text "Hamster dashboard" ]
         , h2 [] [ text "What are you doing?" ]
-        , form [ id "activity-form" ]
+        , form [ id "activity-form", onSubmit (FormSubmit model.form) ]
             [ fieldset [ for "activity-form" ]
                 [ textInput "Name" "coding in elm" model.form.name FormNameChanged
                 , textInput "Category" "Work" model.form.category FormCategoryChanged
@@ -91,6 +99,13 @@ update msg model =
             in
                 ( model, Cmd.none )
 
+        FormSubmit form ->
+            let
+                hamsterClientCmd =
+                    call (createFact (toFact form))
+            in
+                ( model, Cmd.map CreatedFact hamsterClientCmd )
+
         FormNameChanged name ->
             let
                 { form } =
@@ -112,21 +127,21 @@ update msg model =
             in
                 ( { model | form = { form | tags = tags } }, Cmd.none )
 
-        CreatedFact fact ->
-            ( model, Cmd.none )
-
-        -- TODO implement this next
-        CreateFact factString ->
-            let
-                response =
-                    Nothing
-
-                -- call (createFact (fromFactString factString))
-            in
-                update FetchTodaysFacts model
-
-        FetchedTodaysFacts factMsg ->
+        CreatedFact factMsg ->
             case factMsg of
+                Success request fact ->
+                    -- ( { model | facts = facts }, Cmd.none )
+                    update FetchTodaysFacts model
+
+                Error request httpError ->
+                    let
+                        dbg =
+                            Debug.log "error response" httpError
+                    in
+                        ( model, Cmd.none )
+
+        FetchedTodaysFacts factsMsg ->
+            case factsMsg of
                 Success request facts ->
                     ( { model | facts = facts }, Cmd.none )
 

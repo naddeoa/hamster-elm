@@ -1,4 +1,4 @@
-module Fact exposing (Fact, decode, encode, toHtml, toHamsterQuery, simpleFact)
+module Fact exposing (Fact, decode, encode, toHtml, toHamsterQuery, simpleFact, fromStrings)
 
 import Html exposing (Html, text, ul, li)
 import EncodeExtras exposing (encodeMaybe)
@@ -10,6 +10,7 @@ import Tag exposing (Tag)
 import Tags exposing (Tags)
 import Activity exposing (Activity)
 import String
+import Time exposing (Time)
 
 
 {-| Create a `Fact` with the bear minimum required data. This fact only
@@ -20,12 +21,25 @@ exists locally in the application.
 simpleFact : String -> String -> List String -> Fact
 simpleFact name category tags =
     Fact Nothing
+        -- TODO don't commit the date
         (Date.fromTime 0)
         (Date.fromTime 0)
         0
-        "Description"
+        "Made from elm"
         (Activity name category)
         (List.map (\tag -> Tag Nothing tag) tags)
+
+
+fromStrings : String -> String -> List String -> Time -> Time -> Fact
+fromStrings name category tags startDate endDate =
+    Fact Nothing
+        (Date.fromTime startDate)
+        (Date.fromTime endDate)
+        0
+        "Made from elm"
+        (Activity name category)
+        (List.map (\tag -> Tag Nothing tag) tags)
+
 
 type alias Fact =
     { id : Maybe Int
