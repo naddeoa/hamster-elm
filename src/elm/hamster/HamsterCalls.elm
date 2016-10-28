@@ -35,8 +35,8 @@ getTags () =
     API.HamsterRequest Tags.decode Tags.toHtml "tags" Tags.encode API.GET Nothing
 
 
-getTodaysFacts : () -> HamsterRequest Facts
-getTodaysFacts () =
+getTodaysFacts : HamsterRequest Facts
+getTodaysFacts =
     API.HamsterRequest Facts.decode Facts.toHtml "facts/today" Facts.encode API.GET Nothing
 
 

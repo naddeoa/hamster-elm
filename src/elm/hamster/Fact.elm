@@ -1,4 +1,4 @@
-module Fact exposing (Fact, decode, encode, toHtml, toHamsterQuery)
+module Fact exposing (Fact, decode, encode, toHtml, toHamsterQuery, simpleFact)
 
 import Html exposing (Html, text, ul, li)
 import EncodeExtras exposing (encodeMaybe)
@@ -6,8 +6,25 @@ import Json.Decode as Decode exposing (Decoder, (:=), string, int, float, list, 
 import Json.Encode as Encode exposing (encode, Value)
 import HamsterAPI as API exposing (..)
 import Date exposing (Date, toTime)
+import Tag exposing (Tag)
 import Tags exposing (Tags)
 import Activity exposing (Activity)
+
+
+{-| Create a `Fact` with the bear minimum required data. This fact only
+exists locally in the application.
+
+    simpleFact "what I'm doing" "cateogry" ["tag1", "tag2"] == Fact
+-}
+simpleFact : String -> String -> List String -> Fact
+simpleFact name category tags =
+    Fact Nothing
+        (Date.fromTime 0)
+        (Date.fromTime 0)
+        0
+        "Description"
+        (Activity name category)
+        (List.map (\tag -> Tag Nothing tag) tags)
 
 
 type alias Fact =
@@ -31,8 +48,6 @@ decode =
         ("description" := string)
         ("activity" := Activity.decode)
         ("tags" := Tags.decode)
-
-
 
 
 encode : Fact -> Value

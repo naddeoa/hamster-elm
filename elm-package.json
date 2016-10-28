@@ -5,7 +5,8 @@
   "license": "BSD3",
   "source-directories": [
     "src/elm",
-    "src/elm/hamster"
+    "src/elm/hamster",
+    "src/elm/Components"
   ],
   "exposed-modules": [],
   "dependencies": {

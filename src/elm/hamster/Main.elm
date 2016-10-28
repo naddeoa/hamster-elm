@@ -53,7 +53,6 @@ init =
         fact =
             Fact Nothing (Date.fromTime 1477422711) (Date.fromTime 0) 0 "my description" activity tags
     in
---        ( API.emptyResponse, (call (HamsterCalls.createFact fact)) )
         ( API.emptyResponse, (call (HamsterCalls.getTodaysFacts ())) )
 
 

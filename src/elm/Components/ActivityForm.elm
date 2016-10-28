@@ -1,35 +1,32 @@
-module Main exposing (Model, Msg, view, update)
+module Components.ActivityForm exposing (..)
 
 import Html exposing (Html, div, text, input)
-import Html.Attributes exposing (placeholder)
-import Html.Events exposing (onInput)
 import Html.App
+import TextInput
 
 
 type alias Model =
     { label : String
-    , placeholder : String
-    , text : Maybe String
+    , text : String
     }
 
 
 type Msg
-    = TextEntered String
+    = NoOp
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ text model.label
-        , input [ placeholder model.placeholder, onInput TextEntered ] []
+        [ TextInput.view (TextInput.Model "Activity" "activity name" Nothing)
         ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        TextEntered text ->
-            ( { model | text = Just text }, Cmd.none )
+        NoOp ->
+            ( model, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -39,7 +36,7 @@ subscriptions model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model "Name" "Placeholder" Nothing, Cmd.none )
+    ( Model "Name" "Placeholder", Cmd.none )
 
 
 main =
