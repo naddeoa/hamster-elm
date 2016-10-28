@@ -89,4 +89,4 @@ type HamsterMsg payload
 -}
 endpoint : String -> String
 endpoint path =
-    "http://localhost:3000/" ++ path
+    "http://uf8cab8373bd057ead754:3000/" ++ path
