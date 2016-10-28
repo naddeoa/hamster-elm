@@ -9,6 +9,7 @@ import Date exposing (Date, toTime)
 import Tag exposing (Tag)
 import Tags exposing (Tags)
 import Activity exposing (Activity)
+import String
 
 
 {-| Create a `Fact` with the bear minimum required data. This fact only
@@ -25,7 +26,6 @@ simpleFact name category tags =
         "Description"
         (Activity name category)
         (List.map (\tag -> Tag Nothing tag) tags)
-
 
 type alias Fact =
     { id : Maybe Int
