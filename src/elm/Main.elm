@@ -2,13 +2,14 @@ module Main exposing (..)
 
 import Html exposing (Html, div, text, input, h1, h2, label, form, fieldset, ul, li, button)
 import Html.Attributes exposing (for, id, placeholder, value)
-import Html.Events exposing (onSubmit, onInput)
+import Html.Events exposing (onSubmit, onInput, onClick)
 import Html.App
 import HamsterAPI exposing (HamsterMsg(Success, Error))
 import HamsterClient exposing (call)
-import HamsterCalls exposing (getTodaysFacts, createFact)
+import HamsterCalls exposing (getTodaysFacts, createFact, stopTracking)
 import Facts exposing (Facts)
 import Fact exposing (Fact, simpleFact)
+import NewEndTime exposing (NewEndTime)
 import Date exposing (Date)
 import String
 
@@ -33,13 +34,15 @@ empty =
 
 toFact : Form -> Fact
 toFact form =
-    Fact.fromStrings form.name form.category (String.split "," form.tags) 1477606657 0
+    simpleFact form.name form.category (String.split "," form.tags)
 
 
 type Msg
     = FetchTodaysFacts
     | FetchedTodaysFacts (HamsterMsg Facts)
     | CreatedFact (HamsterMsg Fact)
+    | StoppedTracking (HamsterMsg NewEndTime)
+    | StopTracking
     | Log String String
     | FormNameChanged String
     | FormCategoryChanged String
@@ -86,6 +89,7 @@ view model =
             ]
         , h2 [] [ text "What you've done today" ]
         , renderFacts model
+        , button [ onClick StopTracking ] [ text "Stop tracking" ]
         ]
 
 
@@ -98,6 +102,25 @@ update msg model =
                     Debug.log name string
             in
                 ( model, Cmd.none )
+
+        StopTracking ->
+            let
+                hamsterClientCmd =
+                    call stopTracking
+            in
+                ( model, Cmd.map StoppedTracking hamsterClientCmd )
+
+        StoppedTracking newEndTimeMsg ->
+            case newEndTimeMsg of
+                Success request fact ->
+                    update FetchTodaysFacts model
+
+                Error request httpError ->
+                    let
+                        dbg =
+                            Debug.log "error response" httpError
+                    in
+                        ( model, Cmd.none )
 
         FormSubmit form ->
             let

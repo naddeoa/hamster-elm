@@ -40,8 +40,8 @@ getTodaysFacts =
     API.HamsterRequest Facts.decode Facts.toHtml "facts/today" Facts.encode API.GET Nothing
 
 
-stopTracking : () -> HamsterRequest NewEndTime
-stopTracking () =
+stopTracking : HamsterRequest NewEndTime
+stopTracking =
     API.HamsterRequest NewEndTime.decode NewEndTime.toHtml "tracking/stop" NewEndTime.encode API.POST Nothing
 
 
