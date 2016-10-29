@@ -12,6 +12,7 @@ import Fact exposing (Fact, simpleFact)
 import NewEndTime exposing (NewEndTime)
 import Date exposing (Date)
 import String
+import Components.Library exposing (..)
 
 
 type alias Model =
@@ -81,9 +82,15 @@ view model =
         , h2 [] [ text "What are you doing?" ]
         , form [ id "activity-form", onSubmit (FormSubmit model.form) ]
             [ fieldset [ for "activity-form" ]
-                [ textInput "Name" "coding in elm" model.form.name FormNameChanged
-                , textInput "Category" "Work" model.form.category FormCategoryChanged
-                , textInput "Tags" "coding, elm" model.form.tags FormTagsChanged
+                [ textEntry
+                    (TextEntryModel "Name" "name" (Just "coding in elm"))
+                    [ value model.form.name, onInput FormNameChanged ]
+                , textEntry
+                    (TextEntryModel "Category" "category" (Just "Work"))
+                    [ value model.form.category, onInput FormCategoryChanged ]
+                , textEntry
+                    (TextEntryModel "Tags" "tags" (Just "coding, elm"))
+                    [ value model.form.tags, onInput FormTagsChanged ]
                 , button [] [ text "Save" ]
                 ]
             ]
