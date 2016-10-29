@@ -1,0 +1,22 @@
+<html>
+
+  <head>
+   <title>Hamster time tracker</title>
+  </head>
+
+  <body>
+    <div id='container'></div>
+    <link rel="stylesheet" type="text/css" href="../css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="../css/skeleton.css">
+
+    Use the elm-make bundle
+    <script src="../../build/elm-bundle.js"></script>
+    <script>
+        var Elm = require('../../build/elm-bundle.js');
+        var container = document.getElementById('container');
+        var app = Elm.Main.embed(container);
+    </script>
+
+  </body>
+</html>
+

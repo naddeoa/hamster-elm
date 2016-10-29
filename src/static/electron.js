@@ -1,4 +1,5 @@
 'use strict';
+// This is the entry point for the Electron application.
 const electron = require('electron');
 
 const app = electron.app;// this is our app
@@ -16,7 +17,8 @@ function createWindow () {
   });
 
   // display the index.html file
-  mainWindow.loadURL(`file://${ __dirname }/../html/index.html`);
+  // mainWindow.loadURL(`file://${ __dirname }/../static/electron.html`);
+  mainWindow.loadURL(`file://${ __dirname }/../static/electron.html`);
 
   // open dev tools by default so we can see any console errors
   mainWindow.webContents.openDevTools();

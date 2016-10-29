@@ -1,5 +1,5 @@
 module.exports = {
-    entry: './src/js/index.js',
+    entry: './src/static/index.js',
     output: {
         path: './build',
         publicPath: '/assets/',
