@@ -91,7 +91,7 @@ view model =
                 , textEntry
                     (TextEntryModel "Tags" "tags" (Just "coding, elm"))
                     [ value model.form.tags, onInput FormTagsChanged ]
-                , button [] [ text "Save" ]
+                , formButton "Save" []
                 ]
             ]
         , h2 [] [ text "What you've done today" ]

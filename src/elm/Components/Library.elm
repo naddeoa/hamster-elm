@@ -6,6 +6,7 @@ module Components.Library
         , ColumnType(Medium, Large, Small, ExtraSmall)
         , textEntry
         , TextEntryModel
+        , formButton
         )
 
 import Html exposing (..)
@@ -25,25 +26,45 @@ gridRow attributes html =
 
 type ColumnType size
     = Medium Int
+    | MediumOffset Int
     | Large Int
+    | LargeOffset Int
     | Small Int
+    | SmallOffset Int
     | ExtraSmall Int
+    | ExtraSmallOffset Int
 
 
 columnClass : ColumnType size -> String
 columnClass columnType =
-    case columnType of
-        Medium size ->
-            "col-md-" ++ toString size
+    let
+        (prefix, size) =
+            case columnType of
+                Medium size ->
+                    ("col-md-", size)
 
-        Large size ->
-            "col-lg-" ++ toString size
+                MediumOffset size ->
+                    ("col-md-offset-", size)
 
-        Small size ->
-            "col-sm-" ++ toString size
+                Large size ->
+                    ("col-lg-", size)
 
-        ExtraSmall size ->
-            "col-xs-" ++ toString size
+                LargeOffset size ->
+                    ("col-lg-offset-", size)
+
+                Small size ->
+                    ("col-sm-", size)
+
+                SmallOffset size ->
+                    ("col-sm-offset-", size)
+
+                ExtraSmall size ->
+                    ("col-xs-", size)
+
+                ExtraSmallOffset size ->
+                    ("col-xs-offset-", size)
+    in
+        prefix ++ toString size
 
 
 type FormComponent
@@ -51,6 +72,8 @@ type FormComponent
     | FormControl
     | FormGroup
     | HorizontalFormGroup
+    | Button
+    | PrimaryButton
 
 
 formComponentClass : FormComponent -> String
@@ -67,6 +90,12 @@ formComponentClass formComponent =
 
         HorizontalFormGroup ->
             formComponentClass FormGroup ++ " form-horizontal"
+
+        Button ->
+            "btn"
+
+        PrimaryButton ->
+            formComponentClass Button ++ " btn-primary"
 
 
 type ClassPart part
@@ -119,6 +148,29 @@ textEntry model extraInputAttributes =
             generateClasses [ ColumnPart (Small 2) ]
     in
         div [ class (generateClass (FormPart HorizontalFormGroup)) ]
-            [ label [ for model.id, class (generateClasses [ ColumnPart (Small 2), FormPart (FormLabel) ]) ] [ text model.label ]
+            [ label
+                [ for model.id
+                , class (generateClasses [ ColumnPart (Small 2), FormPart (FormLabel) ])
+                ]
+                [ text model.label ]
             , gridColumn [ Small 10 ] [] [ input inputAttributes [] ]
             ]
+
+
+
+
+
+formButton : String -> List (Html.Attribute a) -> Html a
+formButton labelText extraAttributes =
+    let
+        containerClass =
+            generateClasses [ ColumnPart (SmallOffset 2), ColumnPart (Small 10) ]
+
+        buttonClass =
+            generateClasses [ FormPart PrimaryButton ]
+
+        attributes =
+            [ class buttonClass ] ++ extraAttributes
+    in
+        div [ class containerClass ]
+            [ button attributes [ text labelText ] ]
