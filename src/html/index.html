@@ -1,26 +1,27 @@
 <html>
 
   <head>
-   <title>This title shows at the top</title>
+   <title>Hamster time tracker</title>
   </head>
 
   <body>
     <div id='container'></div>
-    <script src="../../build/elm/bundle.js"></script>
-    <script>
-        var Elm = require('../../build/elm/bundle.js');
-//        var Hamster = require("../js/hamster.js");
-        console.log(__dirname);
-        var container = document.getElementById('container');
-        var app = Elm.Main.embed(container);
+    <link rel="stylesheet" type="text/css" href="../css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="../css/skeleton.css">
 
-//        var hamster = new Hamster();
-//        app.ports.requestTags.subscribe(function(){
-//            hamster.getTags().then(function(tags){
-//                apps.ports.receiveTags.send(tags);
-//            });
-//        })
-    </script>
+    <!-- Use the elm-make bundle -->
+    <!-- <script src="../../build/elm/bundle.js"></script> -->
+    <!-- <script> -->
+    <!--     var Elm = require('../../build/elm/bundle.js'); -->
+    <!--     var container = document.getElementById('container'); -->
+    <!--     var app = Elm.Main.embed(container); -->
+    <!-- </script> -->
+
+    <!-- Use the webpack bundle -->
+    <!-- <script src="../../build/webpack-bundle.js"></script> -->
+
+    <!-- Use the webpack dev server bundle -->
+    <script src='http://localhost:8080/assets/webpack-bundle.js'></script>
 
   </body>
 </html>

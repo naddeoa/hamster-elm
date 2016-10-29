@@ -189,6 +189,7 @@ init =
     update FetchTodaysFacts empty
 
 
+main : Program Never
 main =
     Html.App.program
         { update = update
