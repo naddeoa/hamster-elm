@@ -61,11 +61,8 @@ renderFactDate date =
 
         minute =
             String.padLeft 2 '0' (toString (Date.minute date))
-
-        time =
-            hour ++ ":" ++ minute ++ " GMT"
     in
-        time
+        hour ++ ":" ++ minute
 
 
 renderFactDates : Fact -> String
@@ -75,7 +72,37 @@ renderFactDates fact =
             renderFactDate fact.startDate
 
         False ->
-            renderFactDate fact.startDate ++ "-" ++ renderFactDate fact.endDate
+            renderFactDate fact.startDate ++ " - " ++ renderFactDate fact.endDate
+
+
+parseMinutes : Fact -> Int
+parseMinutes fact =
+    Basics.floor (Basics.toFloat (fact.totalSeconds) / 60)
+
+
+renderMinutes : Fact -> String
+renderMinutes fact =
+    formatMinutes (parseMinutes fact)
+
+
+
+
+formatMinutes : Int -> String
+formatMinutes totalMinutes =
+    let
+        minutes =
+            totalMinutes % 60
+
+        hours =
+            Basics.floor (Basics.toFloat totalMinutes / 60)
+
+        hourString =
+            if hours > 0 then
+                toString hours ++ "h "
+            else
+                ""
+    in
+        hourString ++ (toString minutes) ++ "m"
 
 
 {-| TODO pull tables/rows into the component library
@@ -83,6 +110,9 @@ renderFactDates fact =
 renderFact : Fact -> Html Msg
 renderFact fact =
     let
+        duration =
+            (Basics.toFloat fact.totalSeconds) / 60
+
         rowAttributes =
             if Fact.inProgress fact then
                 [ Attributes.class "success" ]
@@ -92,7 +122,25 @@ renderFact fact =
         Html.tr rowAttributes
             [ Html.td [] [ button "Load form" [ NormalButton, ExtraSmallButton ] [ onClick (LoadFactIntoForm fact) ] ]
             , Html.td [] [ text (renderFactDates fact) ]
+            , Html.td [] [ text (renderMinutes fact) ]
             , Html.td [] [ text (Fact.toHamsterQuery fact) ]
+            ]
+
+
+renderTotals : Facts -> Html Msg
+renderTotals facts =
+    let
+        minutes =
+            (List.map parseMinutes facts)
+
+        total =
+            List.foldl (\fact1 fact2 -> fact1 + fact2) 0 minutes
+    in
+        Html.tr [ Attributes.class "info" ]
+            [ Html.td [] []
+            , Html.td [] []
+            , Html.td [] [ text (formatMinutes total ++ "m") ]
+            , Html.td [] []
             ]
 
 
@@ -104,7 +152,7 @@ renderFacts model =
 
         False ->
             Html.table [ Attributes.class "table table-striped" ]
-                [ Html.tbody [] (List.map renderFact model.facts)
+                [ Html.tbody [] ((List.map renderFact model.facts) ++ [ renderTotals model.facts ])
                 ]
 
 
@@ -151,7 +199,7 @@ view model =
         stopTrackingButton =
             case currentlyTracking of
                 True ->
-                    button "Stop tracking" [PrimaryButton] [ onClick StopTracking ]
+                    button "Stop tracking" [ PrimaryButton ] [ onClick StopTracking ]
 
                 False ->
                     button "Not currently tracking" [] [ Attributes.disabled True ]
