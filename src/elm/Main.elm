@@ -75,27 +75,40 @@ textInput labelText placeholderText valueText msg =
         ]
 
 
+renderForm : Model -> Html Msg
+renderForm model =
+    form "activity-form"
+        (Just (onSubmit (FormSubmit model.form)))
+        [ textEntry
+            (TextEntryModel "Name" "name" (Just "coding in elm"))
+            [ value model.form.name, onInput FormNameChanged ]
+        , textEntry
+            (TextEntryModel "Category" "category" (Just "Work"))
+            [ value model.form.category, onInput FormCategoryChanged ]
+        , textEntry
+            (TextEntryModel "Tags" "tags" (Just "coding, elm"))
+            [ value model.form.tags, onInput FormTagsChanged ]
+        , formButton "Save" []
+        ]
+
+
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Hamster dashboard" ]
-        , h2 [] [ text "What are you doing?" ]
-        , form "activity-form"
-            (Just (onSubmit (FormSubmit model.form)))
-            [ textEntry
-                (TextEntryModel "Name" "name" (Just "coding in elm"))
-                [ value model.form.name, onInput FormNameChanged ]
-            , textEntry
-                (TextEntryModel "Category" "category" (Just "Work"))
-                [ value model.form.category, onInput FormCategoryChanged ]
-            , textEntry
-                (TextEntryModel "Tags" "tags" (Just "coding, elm"))
-                [ value model.form.tags, onInput FormTagsChanged ]
-            , formButton "Save" []
+        [ pageTitle "Hamster dashboard" (Just "the elm time tracker")
+        , container []
+            [ gridColumn [ ExtraSmall 12, Medium 4 ]
+                []
+                [ h2 [] [ text "What are you doing?" ]
+                , renderForm model
+                ]
+            , gridColumn [ ExtraSmall 12, Medium 8 ]
+                []
+                [ h2 [] [ text "What you've done today" ]
+                , renderFacts model
+                , button "Stop tracking" [] [ onClick StopTracking ]
+                ]
             ]
-        , h2 [] [ text "What you've done today" ]
-        , renderFacts model
-        , button "Stop tracking" [] [ onClick StopTracking ]
         ]
 
 

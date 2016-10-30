@@ -1,6 +1,7 @@
 module Components.Library
     exposing
         ( container
+        , fluidContainer
         , gridRow
         , gridColumn
         , ColumnType(Medium, Large, Small, ExtraSmall)
@@ -9,6 +10,7 @@ module Components.Library
         , formButton
         , button
         , form
+        , pageTitle
         )
 
 import Html exposing (Html)
@@ -17,9 +19,18 @@ import Html.Events as Events
 import String
 
 
+{-| TODO make classes enum
+-}
 container : List (Html.Attribute a) -> List (Html a) -> Html a
 container attributes html =
     Html.div ([ Attributes.class "container" ] ++ attributes) html
+
+
+{-| TODO make classes enum
+-}
+fluidContainer : List (Html.Attribute a) -> List (Html a) -> Html a
+fluidContainer attributes html =
+    Html.div ([ Attributes.class "container-fluid" ] ++ attributes) html
 
 
 gridRow : List (Html.Attribute a) -> List (Html a) -> Html a
@@ -124,6 +135,25 @@ type alias TextEntryModel =
     , id : String
     , placeholder : Maybe String
     }
+
+
+pageTitle : String -> Maybe String -> Html a
+pageTitle titleText subTextMaybe =
+    let
+        subTextHtml =
+            case subTextMaybe of
+                Nothing ->
+                    []
+
+                Just subText ->
+                    [ Html.small [] [ Html.text (" " ++ subText) ] ]
+    in
+        fluidContainer []
+            [ Html.h1 []
+                [ Html.text titleText
+                , Html.i [Attributes.style [("whiteSpace", "noWrap")]] subTextHtml
+                ]
+            ]
 
 
 form : String -> Maybe (Html.Attribute a) -> List (Html a) -> Html a
