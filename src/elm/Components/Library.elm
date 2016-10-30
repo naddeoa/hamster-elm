@@ -8,21 +8,23 @@ module Components.Library
         , TextEntryModel
         , formButton
         , button
+        , form
         )
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html)
+import Html.Attributes as Attributes
+import Html.Events as Events
 import String
 
 
 container : List (Html.Attribute a) -> List (Html a) -> Html a
 container attributes html =
-    div ([ class "container" ] ++ attributes) html
+    Html.div ([ Attributes.class "container" ] ++ attributes) html
 
 
 gridRow : List (Html.Attribute a) -> List (Html a) -> Html a
 gridRow attributes html =
-    div ([ class "row" ] ++ attributes) html
+    Html.div ([ Attributes.class "row" ] ++ attributes) html
 
 
 type ColumnType
@@ -94,7 +96,7 @@ generateClass part =
             "form-group"
 
         HorizontalFormGroup ->
-            generateClass FormGroup ++ " form-horizontal"
+            "form-horizontal"
 
         Button ->
             "btn"
@@ -114,7 +116,7 @@ gridColumn columnTypes attributes html =
         columnClassString =
             generateClasses (List.map Column columnTypes)
     in
-        div ([ class columnClassString ] ++ attributes) html
+        Html.div ([ Attributes.class columnClassString ] ++ attributes) html
 
 
 type alias TextEntryModel =
@@ -124,27 +126,49 @@ type alias TextEntryModel =
     }
 
 
+form : String -> Maybe (Html.Attribute a) -> List (Html a) -> Html a
+form htmlId submitHandlerMaybe html =
+    let
+        formClass =
+            generateClass HorizontalFormGroup
+
+        attributes =
+            case submitHandlerMaybe of
+                Nothing ->
+                    [ Attributes.id htmlId, Attributes.class formClass ]
+
+                Just submitHandler ->
+                    [ Attributes.id htmlId, submitHandler, Attributes.class formClass ]
+    in
+        Html.form attributes [ Html.fieldset [ Attributes.for htmlId ] html ]
+
+
 textEntry : TextEntryModel -> List (Html.Attribute a) -> Html a
 textEntry model extraInputAttributes =
     let
         inputAttributes =
             extraInputAttributes
-                ++ [ id model.id
-                   , placeholder (Maybe.withDefault "" model.placeholder)
-                   , class (generateClass FormControl)
+                ++ [ Attributes.id model.id
+                   , Attributes.placeholder (Maybe.withDefault "" model.placeholder)
+                   , Attributes.class (generateClass FormControl)
                    ]
 
         labelClass =
             generateClasses [ Column (Small 2) ]
     in
-        div [ class (generateClass HorizontalFormGroup) ]
-            [ label
-                [ for model.id
-                , class (generateClasses [ Column (Small 2), FormLabel ])
+        formGroup
+            [ Html.label
+                [ Attributes.for model.id
+                , Attributes.class (generateClasses [ Column (Small 2), FormLabel ])
                 ]
-                [ text model.label ]
-            , gridColumn [ Small 10 ] [] [ input inputAttributes [] ]
+                [ Html.text model.label ]
+            , gridColumn [ Small 10 ] [] [ Html.input inputAttributes [] ]
             ]
+
+
+formGroup : List (Html a) -> Html a
+formGroup html =
+    Html.div [ Attributes.class (generateClass FormGroup) ] html
 
 
 formButton : String -> List (Html.Attribute a) -> Html a
@@ -153,8 +177,10 @@ formButton labelText extraAttributes =
         containerClass =
             generateClasses [ Column (SmallOffset 2), Column (Small 10) ]
     in
-        div [ class containerClass ]
-            [ button labelText [ PrimaryButton ] extraAttributes ]
+        formGroup
+            [ Html.div [ Attributes.class containerClass ]
+                [ button labelText [ PrimaryButton ] extraAttributes ]
+            ]
 
 
 button : String -> List Property -> List (Html.Attribute a) -> Html a
@@ -164,6 +190,6 @@ button labelText properties extraAttributes =
             generateClasses ([ Button ] ++ properties)
 
         attributes =
-            [ class buttonClass ] ++ extraAttributes
+            [ Attributes.class buttonClass ] ++ extraAttributes
     in
-        Html.button attributes [ text labelText ]
+        Html.button attributes [ Html.text labelText ]

@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, text, input, h1, h2, label, form, fieldset, ul, li)
+import Html exposing (Html, div, text, input, h1, h2, label, ul, li)
 import Html.Attributes exposing (for, id, placeholder, value)
 import Html.Events exposing (onSubmit, onInput, onClick)
 import Html.App
@@ -80,19 +80,18 @@ view model =
     div []
         [ h1 [] [ text "Hamster dashboard" ]
         , h2 [] [ text "What are you doing?" ]
-        , form [ id "activity-form", onSubmit (FormSubmit model.form) ]
-            [ fieldset [ for "activity-form" ]
-                [ textEntry
-                    (TextEntryModel "Name" "name" (Just "coding in elm"))
-                    [ value model.form.name, onInput FormNameChanged ]
-                , textEntry
-                    (TextEntryModel "Category" "category" (Just "Work"))
-                    [ value model.form.category, onInput FormCategoryChanged ]
-                , textEntry
-                    (TextEntryModel "Tags" "tags" (Just "coding, elm"))
-                    [ value model.form.tags, onInput FormTagsChanged ]
-                , formButton "Save" []
-                ]
+        , form "activity-form"
+            (Just (onSubmit (FormSubmit model.form)))
+            [ textEntry
+                (TextEntryModel "Name" "name" (Just "coding in elm"))
+                [ value model.form.name, onInput FormNameChanged ]
+            , textEntry
+                (TextEntryModel "Category" "category" (Just "Work"))
+                [ value model.form.category, onInput FormCategoryChanged ]
+            , textEntry
+                (TextEntryModel "Tags" "tags" (Just "coding, elm"))
+                [ value model.form.tags, onInput FormTagsChanged ]
+            , formButton "Save" []
             ]
         , h2 [] [ text "What you've done today" ]
         , renderFacts model
