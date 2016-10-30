@@ -151,7 +151,7 @@ view model =
                     button "Stop tracking" [] [ onClick StopTracking ]
 
                 False ->
-                    button "Not currently tracking" [] [ Attributes.disabled True]
+                    button "Not currently tracking" [] [ Attributes.disabled True ]
     in
         div []
             [ pageTitle "Hamster dashboard" (Just "the elm time tracker")
@@ -168,6 +168,7 @@ view model =
                     , stopTrackingButton
                     ]
                 ]
+            , Html.p [] []
             ]
 
 
