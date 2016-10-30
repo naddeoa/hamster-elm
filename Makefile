@@ -1,14 +1,16 @@
 
 source = $(shell find ./src/elm -name "*.elm")
 elm-bundle = build/bundle.js
-webpack-bundle = build/bundle.js
+webpack-bundle = build/webpack-bundle.js
 
 .PHONY: elm-reactor default electron server
 
 default: webpack-dev-server
 
+elm: $(elm-bundle)
+
 $(elm-bundle): $(source)
-	elm make $(source) --output $(elm-bundle)
+	elm make $(source) --output $(elm-bundle) --docs=docs.json
 
 $(webpack-bundle): $(source)
 	./node_modules/.bin/webpack

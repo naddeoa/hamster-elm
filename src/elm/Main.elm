@@ -156,20 +156,6 @@ renderFacts model =
                 ]
 
 
-textInput : String -> String -> String -> (String -> a) -> Html a
-textInput labelText placeholderText valueText msg =
-    div []
-        [ label [ for "activity-field" ] [ text labelText ]
-        , input
-            [ id "actvity-field"
-            , placeholder placeholderText
-            , value valueText
-            , onInput msg
-            ]
-            []
-        ]
-
-
 renderForm : Model -> Html Msg
 renderForm model =
     form "activity-form"
