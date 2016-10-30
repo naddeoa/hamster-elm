@@ -7,6 +7,7 @@ module Components.Library
         , textEntry
         , TextEntryModel
         , formButton
+        , button
         )
 
 import Html exposing (..)
@@ -24,7 +25,7 @@ gridRow attributes html =
     div ([ class "row" ] ++ attributes) html
 
 
-type ColumnType size
+type ColumnType
     = Medium Int
     | MediumOffset Int
     | Large Int
@@ -35,40 +36,41 @@ type ColumnType size
     | ExtraSmallOffset Int
 
 
-columnClass : ColumnType size -> String
+columnClass : ColumnType -> String
 columnClass columnType =
     let
-        (prefix, size) =
+        ( prefix, size ) =
             case columnType of
                 Medium size ->
-                    ("col-md-", size)
+                    ( "col-md-", size )
 
                 MediumOffset size ->
-                    ("col-md-offset-", size)
+                    ( "col-md-offset-", size )
 
                 Large size ->
-                    ("col-lg-", size)
+                    ( "col-lg-", size )
 
                 LargeOffset size ->
-                    ("col-lg-offset-", size)
+                    ( "col-lg-offset-", size )
 
                 Small size ->
-                    ("col-sm-", size)
+                    ( "col-sm-", size )
 
                 SmallOffset size ->
-                    ("col-sm-offset-", size)
+                    ( "col-sm-offset-", size )
 
                 ExtraSmall size ->
-                    ("col-xs-", size)
+                    ( "col-xs-", size )
 
                 ExtraSmallOffset size ->
-                    ("col-xs-offset-", size)
+                    ( "col-xs-offset-", size )
     in
         prefix ++ toString size
 
 
-type FormComponent
-    = FormLabel
+type Property
+    = Column ColumnType
+    | FormLabel
     | FormControl
     | FormGroup
     | HorizontalFormGroup
@@ -76,9 +78,12 @@ type FormComponent
     | PrimaryButton
 
 
-formComponentClass : FormComponent -> String
-formComponentClass formComponent =
-    case formComponent of
+generateClass : Property -> String
+generateClass part =
+    case part of
+        Column columnType ->
+            columnClass columnType
+
         FormLabel ->
             "control-label"
 
@@ -89,40 +94,25 @@ formComponentClass formComponent =
             "form-group"
 
         HorizontalFormGroup ->
-            formComponentClass FormGroup ++ " form-horizontal"
+            generateClass FormGroup ++ " form-horizontal"
 
         Button ->
             "btn"
 
         PrimaryButton ->
-            formComponentClass Button ++ " btn-primary"
+            generateClass Button ++ " btn-primary"
 
 
-type ClassPart part
-    = ColumnPart (ColumnType part)
-    | FormPart FormComponent
-
-
-generateClass : ClassPart a -> String
-generateClass part =
-    case part of
-        ColumnPart columnType ->
-            columnClass columnType
-
-        FormPart formComponent ->
-            formComponentClass formComponent
-
-
-generateClasses : List (ClassPart a) -> String
+generateClasses : List Property -> String
 generateClasses parts =
     String.join " " (List.map generateClass parts)
 
 
-gridColumn : List (ColumnType Int) -> List (Html.Attribute a) -> List (Html a) -> Html a
+gridColumn : List ColumnType -> List (Html.Attribute a) -> List (Html a) -> Html a
 gridColumn columnTypes attributes html =
     let
         columnClassString =
-            generateClasses (List.map ColumnPart columnTypes)
+            generateClasses (List.map Column columnTypes)
     in
         div ([ class columnClassString ] ++ attributes) html
 
@@ -141,36 +131,39 @@ textEntry model extraInputAttributes =
             extraInputAttributes
                 ++ [ id model.id
                    , placeholder (Maybe.withDefault "" model.placeholder)
-                   , class (generateClass (FormPart FormControl))
+                   , class (generateClass FormControl)
                    ]
 
         labelClass =
-            generateClasses [ ColumnPart (Small 2) ]
+            generateClasses [ Column (Small 2) ]
     in
-        div [ class (generateClass (FormPart HorizontalFormGroup)) ]
+        div [ class (generateClass HorizontalFormGroup) ]
             [ label
                 [ for model.id
-                , class (generateClasses [ ColumnPart (Small 2), FormPart (FormLabel) ])
+                , class (generateClasses [ Column (Small 2), FormLabel ])
                 ]
                 [ text model.label ]
             , gridColumn [ Small 10 ] [] [ input inputAttributes [] ]
             ]
 
 
-
-
-
 formButton : String -> List (Html.Attribute a) -> Html a
 formButton labelText extraAttributes =
     let
         containerClass =
-            generateClasses [ ColumnPart (SmallOffset 2), ColumnPart (Small 10) ]
+            generateClasses [ Column (SmallOffset 2), Column (Small 10) ]
+    in
+        div [ class containerClass ]
+            [ button labelText [ PrimaryButton ] extraAttributes ]
 
+
+button : String -> List Property -> List (Html.Attribute a) -> Html a
+button labelText properties extraAttributes =
+    let
         buttonClass =
-            generateClasses [ FormPart PrimaryButton ]
+            generateClasses ([ Button ] ++ properties)
 
         attributes =
             [ class buttonClass ] ++ extraAttributes
     in
-        div [ class containerClass ]
-            [ button attributes [ text labelText ] ]
+        Html.button attributes [ text labelText ]

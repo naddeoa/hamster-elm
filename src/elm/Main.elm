@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, text, input, h1, h2, label, form, fieldset, ul, li, button)
+import Html exposing (Html, div, text, input, h1, h2, label, form, fieldset, ul, li)
 import Html.Attributes exposing (for, id, placeholder, value)
 import Html.Events exposing (onSubmit, onInput, onClick)
 import Html.App
@@ -96,7 +96,7 @@ view model =
             ]
         , h2 [] [ text "What you've done today" ]
         , renderFacts model
-        , button [ onClick StopTracking ] [ text "Stop tracking" ]
+        , button "Stop tracking" [] [ onClick StopTracking ]
         ]
 
 
