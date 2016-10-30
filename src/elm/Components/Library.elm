@@ -18,6 +18,7 @@ import Html exposing (Html)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import String
+import List
 
 
 {-| TODO make classes enum
@@ -42,12 +43,16 @@ gridRow attributes html =
 type ColumnType
     = Medium Int
     | MediumOffset Int
+    | MediumPull Int
     | Large Int
     | LargeOffset Int
+    | LargePull Int
     | Small Int
     | SmallOffset Int
+    | SmallPull Int
     | ExtraSmall Int
     | ExtraSmallOffset Int
+    | ExtraSmallPull Int
 
 
 columnClass : ColumnType -> String
@@ -61,11 +66,17 @@ columnClass columnType =
                 MediumOffset size ->
                     ( "col-md-offset-", size )
 
+                MediumPull size ->
+                    ( "col-md-pull-", size )
+
                 Large size ->
                     ( "col-lg-", size )
 
                 LargeOffset size ->
                     ( "col-lg-offset-", size )
+
+                LargePull size ->
+                    ( "col-lg-pull-", size )
 
                 Small size ->
                     ( "col-sm-", size )
@@ -73,10 +84,16 @@ columnClass columnType =
                 SmallOffset size ->
                     ( "col-sm-offset-", size )
 
+                SmallPull size ->
+                    ( "col-sm-pull-", size )
+
                 ExtraSmall size ->
                     ( "col-xs-", size )
 
                 ExtraSmallOffset size ->
+                    ( "col-xs-offset-", size )
+
+                ExtraSmallPull size ->
                     ( "col-xs-offset-", size )
     in
         prefix ++ toString size
@@ -205,9 +222,17 @@ form htmlId submitHandlerMaybe html =
         Html.form attributes [ Html.fieldset [ Attributes.for htmlId ] html ]
 
 
-textEntry : TextEntryModel -> List (Html.Attribute a) -> Html a
-textEntry model extraInputAttributes =
+textEntry : TextEntryModel -> List (Html.Attribute a) -> List ( ColumnType, ColumnType ) -> Html a
+textEntry model extraInputAttributes customSizes =
     let
+        ( customLabelSizes, customInputSizes ) =
+            case List.isEmpty customSizes of
+                True ->
+                    ( [ Medium 4 ], [ Medium 8 ] )
+
+                False ->
+                    List.unzip customSizes
+
         inputAttributes =
             extraInputAttributes
                 ++ [ Attributes.id model.id
@@ -215,16 +240,19 @@ textEntry model extraInputAttributes =
                    , Attributes.class (generateClass FormControl)
                    ]
 
-        labelClass =
-            generateClasses [ Column (Small 2) ]
+        labelClasses =
+            [ FormLabel ] ++ List.map Column customLabelSizes
+
+        columnClasses =
+            customInputSizes
     in
         formGroup
             [ Html.label
                 [ Attributes.for model.id
-                , Attributes.class (generateClasses [ Column (Small 2), FormLabel ])
+                , Attributes.class (generateClasses labelClasses)
                 ]
                 [ Html.text model.label ]
-            , gridColumn [ Small 10 ] [] [ Html.input inputAttributes [] ]
+            , gridColumn columnClasses [] [ Html.input inputAttributes [] ]
             ]
 
 
@@ -237,7 +265,7 @@ formButton : String -> List (Html.Attribute a) -> Html a
 formButton labelText extraAttributes =
     let
         containerClass =
-            generateClasses [ Column (SmallOffset 2), Column (Small 10) ]
+            generateClasses [ Column (MediumOffset 4), Column (Medium 8) ]
     in
         formGroup
             [ Html.div [ Attributes.class containerClass ]

@@ -100,7 +100,7 @@ renderFacts : Model -> Html Msg
 renderFacts model =
     case List.isEmpty model.facts of
         True ->
-            text "Nothing yet. Get to work!"
+            Html.p [] [ text "Nothing yet. Get to work!" ]
 
         False ->
             Html.table [ Attributes.class "table table-striped" ]
@@ -129,12 +129,15 @@ renderForm model =
         [ textEntry
             (TextEntryModel "Name" "name" (Just "coding in elm"))
             [ value model.form.name, onInput FormNameChanged ]
+            []
         , textEntry
             (TextEntryModel "Category" "category" (Just "Work"))
             [ value model.form.category, onInput FormCategoryChanged ]
+            []
         , textEntry
-            (TextEntryModel "Tags" "tags" (Just "coding, elm"))
+            (TextEntryModel "Tags" "tags" (Just "elm, coding"))
             [ value model.form.tags, onInput FormTagsChanged ]
+            []
         , formButton "Save" []
         ]
 
@@ -148,7 +151,7 @@ view model =
         stopTrackingButton =
             case currentlyTracking of
                 True ->
-                    button "Stop tracking" [] [ onClick StopTracking ]
+                    button "Stop tracking" [PrimaryButton] [ onClick StopTracking ]
 
                 False ->
                     button "Not currently tracking" [] [ Attributes.disabled True ]
