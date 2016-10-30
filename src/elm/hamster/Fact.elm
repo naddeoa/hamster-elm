@@ -1,4 +1,4 @@
-module Fact exposing (Fact, decode, encode, toHtml, toHamsterQuery, simpleFact, fromStrings)
+module Fact exposing (Fact, decode, encode, toHtml, toHamsterQuery, simpleFact, fromStrings, inProgress)
 
 import Html exposing (Html, text, ul, li)
 import EncodeExtras exposing (encodeMaybe)
@@ -39,6 +39,11 @@ fromStrings name category tags startDate endDate =
         "Made from elm"
         (Activity name category)
         (List.map (\tag -> Tag Nothing tag) tags)
+
+
+inProgress : Fact -> Bool
+inProgress fact =
+    (Date.toTime fact.endDate) == 0
 
 
 type alias Fact =

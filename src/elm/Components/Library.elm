@@ -5,6 +5,7 @@ module Components.Library
         , gridRow
         , gridColumn
         , ColumnType(Medium, Large, Small, ExtraSmall)
+        , ButtonType(PrimaryButton, NormalButton, LargeButton, SmallButton, ExtraSmallButton, SuccessButton)
         , textEntry
         , TextEntryModel
         , formButton
@@ -81,14 +82,48 @@ columnClass columnType =
         prefix ++ toString size
 
 
+type ButtonType
+    = PrimaryButton
+    | NormalButton
+    | LargeButton
+    | SmallButton
+    | ExtraSmallButton
+    | BaseButton
+    | SuccessButton
+
+
 type Property
     = Column ColumnType
     | FormLabel
     | FormControl
     | FormGroup
     | HorizontalFormGroup
-    | Button
-    | PrimaryButton
+    | Button ButtonType
+
+
+buttonClass : ButtonType -> String
+buttonClass buttonType =
+    case buttonType of
+        BaseButton ->
+            "btn"
+
+        PrimaryButton ->
+            "btn-primary"
+
+        NormalButton ->
+            "btn-default"
+
+        LargeButton ->
+            "btn-lg"
+
+        SmallButton ->
+            "btn-sm"
+
+        ExtraSmallButton ->
+            "btn-xs"
+
+        SuccessButton ->
+            "btn-success"
 
 
 generateClass : Property -> String
@@ -109,11 +144,8 @@ generateClass part =
         HorizontalFormGroup ->
             "form-horizontal"
 
-        Button ->
-            "btn"
-
-        PrimaryButton ->
-            generateClass Button ++ " btn-primary"
+        Button buttonType ->
+            buttonClass buttonType
 
 
 generateClasses : List Property -> String
@@ -151,7 +183,7 @@ pageTitle titleText subTextMaybe =
         fluidContainer []
             [ Html.h1 []
                 [ Html.text titleText
-                , Html.i [Attributes.style [("whiteSpace", "noWrap")]] subTextHtml
+                , Html.i [ Attributes.style [ ( "whiteSpace", "noWrap" ) ] ] subTextHtml
                 ]
             ]
 
@@ -213,11 +245,11 @@ formButton labelText extraAttributes =
             ]
 
 
-button : String -> List Property -> List (Html.Attribute a) -> Html a
+button : String -> List ButtonType -> List (Html.Attribute a) -> Html a
 button labelText properties extraAttributes =
     let
         buttonClass =
-            generateClasses ([ Button ] ++ properties)
+            generateClasses ([ Button BaseButton ] ++ (List.map Button properties))
 
         attributes =
             [ Attributes.class buttonClass ] ++ extraAttributes
