@@ -4,6 +4,9 @@ module Bootstrap.Properties
         , ColumnProperty(..)
         , ButtonProperty(..)
         , AttributeProperty(..)
+        , TableProperty(..)
+        , TableRowProperty(..)
+        , TableCellProperty(..)
         , toAttributes
         , merge
         )
@@ -22,11 +25,16 @@ type Property
     = Column ColumnProperty
     | Button ButtonProperty
     | HtmlAttribute AttributeProperty
+    | Table TableProperty
+    | TableRow TableRowProperty
+    | TableCell TableCellProperty
     | Row
+    | Container
     | FormLabel
     | FormControl
     | FormGroup
     | HorizontalFormGroup
+    | ResponsiveTableContainer
 
 
 {-| Docs
@@ -66,6 +74,36 @@ type ButtonProperty
     | ExtraSmallButton
     | BaseButton
     | SuccessButton
+
+
+{-| Docs
+-}
+type TableProperty
+    = BorderedTable
+    | HoverTable
+    | CondensedTable
+    | StripedTable
+    | BaseTable
+
+
+{-| Docs
+-}
+type TableRowProperty
+    = SuccessRow
+    | ActiveRow
+    | InfoRow
+    | WarningRow
+    | DangerRow
+
+
+{-| Docs
+-}
+type TableCellProperty
+    = SuccessCell
+    | ActiveCell
+    | InfoCell
+    | WarningCell
+    | DangerCell
 
 
 {-| Docs
@@ -134,6 +172,9 @@ generateAttributeBundle property =
         Row ->
             { classes = "row" }
 
+        Container ->
+            { classes = "container" }
+
         FormLabel ->
             { classes = "control-label" }
 
@@ -151,6 +192,77 @@ generateAttributeBundle property =
 
         HtmlAttribute attribute ->
             { classes = htmlAttributeClass attribute }
+
+        Table property ->
+            { classes = tableClass property }
+
+        TableRow property ->
+            { classes = tableRowClass property }
+
+        ResponsiveTableContainer ->
+            { classes = "table-responsive" }
+
+        TableCell property ->
+            { classes = tableCellClass property }
+
+
+{-| Docs
+-}
+tableCellClass : TableCellProperty -> String
+tableCellClass property =
+    case property of
+        SuccessCell ->
+            "success"
+
+        ActiveCell ->
+            "active"
+
+        InfoCell ->
+            "info"
+
+        WarningCell ->
+            "warning"
+
+        DangerCell ->
+            "danger"
+
+
+tableRowClass : TableRowProperty -> String
+tableRowClass property =
+    case property of
+        SuccessRow ->
+            "success"
+
+        ActiveRow ->
+            "active"
+
+        InfoRow ->
+            "info"
+
+        WarningRow ->
+            "warning"
+
+        DangerRow ->
+            "danger"
+
+
+tableClass : TableProperty -> String
+tableClass property =
+    case property of
+        BorderedTable ->
+            "table-bordered"
+
+        HoverTable ->
+            "table-hover"
+
+        CondensedTable ->
+            "table-condensed"
+
+        StripedTable ->
+            "table-striped"
+
+        BaseTable ->
+            "table"
 
 
 {-| Docs

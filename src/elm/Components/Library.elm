@@ -11,7 +11,7 @@ module Components.Library
         , formButton
         , button
         , form
-        , pageTitle
+        , titleWithSub
         )
 
 import Html exposing (Html)
@@ -19,6 +19,32 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 import String
 import List
+import Bootstrap.Properties as Properties
+import Bootstrap.Elements as Elements
+import Facts exposing (Facts)
+import Fact exposing (Fact)
+import Date exposing (Date)
+
+
+{-| Docs
+-}
+titleWithSub : String -> Maybe String -> Html a
+titleWithSub titleText subTextMaybe =
+    let
+        subTextHtml =
+            case subTextMaybe of
+                Nothing ->
+                    []
+
+                Just subText ->
+                    [ Html.small [] [ Html.text (" " ++ subText) ] ]
+    in
+        fluidContainer []
+            [ Html.h1 []
+                [ Html.text titleText
+                , Html.i [ Attributes.style [ ( "whiteSpace", "noWrap" ) ] ] subTextHtml
+                ]
+            ]
 
 
 {-| TODO make classes enum
@@ -184,25 +210,6 @@ type alias TextEntryModel =
     , id : String
     , placeholder : Maybe String
     }
-
-
-pageTitle : String -> Maybe String -> Html a
-pageTitle titleText subTextMaybe =
-    let
-        subTextHtml =
-            case subTextMaybe of
-                Nothing ->
-                    []
-
-                Just subText ->
-                    [ Html.small [] [ Html.text (" " ++ subText) ] ]
-    in
-        fluidContainer []
-            [ Html.h1 []
-                [ Html.text titleText
-                , Html.i [ Attributes.style [ ( "whiteSpace", "noWrap" ) ] ] subTextHtml
-                ]
-            ]
 
 
 form : String -> Maybe (Html.Attribute a) -> List (Html a) -> Html a

@@ -1,4 +1,4 @@
-module Bootstrap.Components exposing (button, form, div)
+module Bootstrap.Components exposing (titleWithSub)
 
 {-| Docs
 -}
@@ -6,53 +6,25 @@ module Bootstrap.Components exposing (button, form, div)
 import Html exposing (Html)
 import Html.Attributes as Attributes
 import Bootstrap.Properties as Properties exposing (..)
+import Bootstrap.Elements exposing (..)
 
 
-{-| Docs
+{-| TODO delete me
 -}
-button : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
-button properties attributes html =
-    element Html.button (Button BaseButton :: properties) attributes html
+titleWithSub : String -> Maybe String -> Html a
+titleWithSub titleText subTextMaybe =
+    let
+        subTextHtml =
+            case subTextMaybe of
+                Nothing ->
+                    []
 
-
-{-| Docs
--}
-form : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
-form properties attributes html =
-    element Html.form (HorizontalFormGroup :: properties) attributes html
-
-
-{-| Docs
--}
-div : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
-div properties attributes html =
-    element Html.div properties attributes html
-
-{-| Docs
--}
-h1: List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
-h1 properties attributes html =
-    element Html.h1 properties attributes html
-
-
-{-| Docs
--}
-row : List (Html.Attribute a) -> List (Html a) -> Html a
-row attributes html =
-    element Html.div [ Row ] attributes html
-
-
-{-| Docs
--}
-column : List (ColumnProperty) -> List (Html.Attribute a) -> List (Html a) -> Html a
-column properties attributes html =
-    element Html.div (List.map Column properties) attributes html
-
-
-{-| Docs private
--}
-element : (List (Html.Attribute a) -> List (Html a) -> Html a) -> List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
-element htmlFn properties attributes html =
-    htmlFn (Properties.merge (properties) attributes) html
-
-
+                Just subText ->
+                    [ Html.small [] [ Html.text (" " ++ subText) ] ]
+    in
+        fluidContainer []
+            [ Html.h1 []
+                [ Html.text titleText
+                , Html.i [ Attributes.style [ ( "whiteSpace", "noWrap" ) ] ] subTextHtml
+                ]
+            ]
