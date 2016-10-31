@@ -82,8 +82,8 @@ renderTotals facts =
             ]
 
 
-renderFact : Fact -> Html a
-renderFact fact =
+renderFact : (Fact -> onClick) -> Fact -> Html onClick
+renderFact onClick fact =
     let
         duration =
             (Basics.toFloat fact.totalSeconds) / 60
@@ -98,7 +98,7 @@ renderFact fact =
             [ Html.td []
                 [ Elements.button
                     [ Button NormalButton, Button ExtraSmallButton ]
-                    []
+                    [ Events.onClick (onClick fact) ]
                     [ Html.text "Load form" ]
                 ]
             , Html.td [] [ Html.text (renderFactDates fact) ]
@@ -107,8 +107,8 @@ renderFact fact =
             ]
 
 
-factTable : Facts -> Html a
-factTable facts =
+factTable : Facts -> (Fact -> onFactClick) -> Html onFactClick
+factTable facts onFactClick =
     Elements.responsiveTable []
         []
-        [ Elements.tbody [] [] ((List.map renderFact facts) ++ [ renderTotals facts ]) ]
+        [ Elements.tbody [] [] ((List.map (renderFact onFactClick) facts) ++ [ renderTotals facts ]) ]

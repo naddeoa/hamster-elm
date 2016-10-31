@@ -101,7 +101,7 @@ view model =
                 , Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 8 ]
                     []
                     [ h2 [] [ text "What you've done today" ]
-                    , FactTable.factTable model.facts
+                    , FactTable.factTable model.facts LoadFactIntoForm
                     , stopTrackingButton
                     ]
                 ]
