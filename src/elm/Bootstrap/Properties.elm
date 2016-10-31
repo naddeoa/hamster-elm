@@ -1,9 +1,9 @@
 module Bootstrap.Properties
     exposing
-        ( ColumnProperty(..)
+        ( Property(..)
+        , ColumnProperty(..)
         , ButtonProperty(..)
         , AttributeProperty(..)
-        , Property(..)
         , toAttributes
         , merge
         )
@@ -22,6 +22,7 @@ type Property
     = Column ColumnProperty
     | Button ButtonProperty
     | HtmlAttribute AttributeProperty
+    | Row
     | FormLabel
     | FormControl
     | FormGroup
@@ -98,9 +99,11 @@ toAttributes property =
     in
         generateAttributes bundle
 
+
 merge : List Property -> List (Html.Attribute a) -> List (Html.Attribute a)
 merge properties attributes =
     toAttributes properties ++ attributes
+
 
 {-| Docs
 -}
@@ -128,6 +131,9 @@ generateAttributeBundle property =
         Column columnType ->
             { classes = columnClass columnType }
 
+        Row ->
+            { classes = "row" }
+
         FormLabel ->
             { classes = "control-label" }
 
@@ -154,42 +160,6 @@ htmlAttributeClass attribute =
     case attribute of
         Class class ->
             class
-
-
-{-| Docs
--}
-generateClass : Property -> String
-generateClass part =
-    case part of
-        Column columnType ->
-            columnClass columnType
-
-        FormLabel ->
-            "control-label"
-
-        FormControl ->
-            "form-control"
-
-        FormGroup ->
-            "form-group"
-
-        HorizontalFormGroup ->
-            "form-horizontal"
-
-        Button buttonType ->
-            buttonClass buttonType
-
-        HtmlAttribute attribute ->
-            case attribute of
-                Class class ->
-                    class
-
-
-{-| Docs
--}
-generateClasses : List Property -> String
-generateClasses parts =
-    String.join " " (List.map generateClass parts)
 
 
 {-| Docs
