@@ -5,37 +5,26 @@ module Bootstrap.Components exposing (..)
 
 import Html exposing (Html)
 import Html.Attributes as Attributes
-import Bootstrap.Properties exposing (..)
+import Bootstrap.Properties as Properties exposing (..)
 
 
 {-| Docs
 -}
-button : List (Html.Attribute a) -> List (Html a) -> List (Property) -> Html a
-button attributes html properties =
+button : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
+button properties attributes html =
     let
-        buttonClass =
-            generateClasses ([ Button BaseButton ] ++ properties)
-
         buttonAttributes =
-            [ Attributes.class buttonClass ] ++ attributes
+            Properties.merge (Button BaseButton :: properties) attributes
     in
         Html.button buttonAttributes html
 
 
 {-| Docs
 -}
-form : String -> Maybe (Html.Attribute a) -> List (Html a) -> Html a
-form htmlId submitHandlerMaybe html =
+form : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
+form properties attributes html =
     let
-        formClass =
-            generateClass HorizontalFormGroup
-
-        attributes =
-            case submitHandlerMaybe of
-                Nothing ->
-                    [ Attributes.id htmlId, Attributes.class formClass ]
-
-                Just submitHandler ->
-                    [ Attributes.id htmlId, submitHandler, Attributes.class formClass ]
+        formAttributes =
+            Properties.merge (HorizontalFormGroup :: properties) attributes
     in
-        Html.form attributes [ Html.fieldset [ Attributes.for htmlId ] html ]
+        Html.form attributes html

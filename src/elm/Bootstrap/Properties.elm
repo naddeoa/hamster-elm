@@ -2,17 +2,17 @@ module Bootstrap.Properties
     exposing
         ( ColumnProperty(..)
         , ButtonProperty(..)
+        , AttributeProperty(..)
         , Property(..)
-        , generateClass
-        , generateClasses
-        , buttonClass
-        , columnClass
+        , toAttributes
+        , merge
         )
 
 {-| Docs
 -}
 
 import String
+import Html
 import Html.Attributes as Attributes
 
 
@@ -21,10 +21,17 @@ import Html.Attributes as Attributes
 type Property
     = Column ColumnProperty
     | Button ButtonProperty
+    | HtmlAttribute AttributeProperty
     | FormLabel
     | FormControl
     | FormGroup
     | HorizontalFormGroup
+
+
+{-| Docs
+-}
+type AttributeProperty
+    = Class String
 
 
 {-| Docs
@@ -62,6 +69,95 @@ type ButtonProperty
 
 {-| Docs
 -}
+type alias AttributeBundle =
+    { classes : String
+    }
+
+
+{-| Docs
+-}
+emptyBundle : AttributeBundle
+emptyBundle =
+    { classes = "" }
+
+
+{-| Docs
+-}
+generateAttributes : AttributeBundle -> List (Html.Attribute a)
+generateAttributes bundle =
+    [ Attributes.class bundle.classes ]
+
+
+{-| Docs
+-}
+toAttributes : List Property -> List (Html.Attribute a)
+toAttributes property =
+    let
+        bundle =
+            generateAttributeBundles property
+    in
+        generateAttributes bundle
+
+merge : List Property -> List (Html.Attribute a) -> List (Html.Attribute a)
+merge properties attributes =
+    toAttributes properties ++ attributes
+
+{-| Docs
+-}
+combineBundles : AttributeBundle -> AttributeBundle -> AttributeBundle
+combineBundles a b =
+    { classes = a.classes ++ " " ++ b.classes }
+
+
+{-| Docs
+-}
+generateAttributeBundles : List Property -> AttributeBundle
+generateAttributeBundles properties =
+    let
+        bundles =
+            List.map generateAttributeBundle properties
+    in
+        List.foldr combineBundles emptyBundle bundles
+
+
+{-| Docs
+-}
+generateAttributeBundle : Property -> AttributeBundle
+generateAttributeBundle property =
+    case property of
+        Column columnType ->
+            { classes = columnClass columnType }
+
+        FormLabel ->
+            { classes = "control-label" }
+
+        FormControl ->
+            { classes = "form-control" }
+
+        FormGroup ->
+            { classes = "form-group" }
+
+        HorizontalFormGroup ->
+            { classes = "form-horizontal" }
+
+        Button buttonType ->
+            { classes = buttonClass buttonType }
+
+        HtmlAttribute attribute ->
+            { classes = htmlAttributeClass attribute }
+
+
+{-| Docs
+-}
+htmlAttributeClass : AttributeProperty -> String
+htmlAttributeClass attribute =
+    case attribute of
+        Class class ->
+            class
+
+
+{-| Docs
+-}
 generateClass : Property -> String
 generateClass part =
     case part of
@@ -82,6 +178,11 @@ generateClass part =
 
         Button buttonType ->
             buttonClass buttonType
+
+        HtmlAttribute attribute ->
+            case attribute of
+                Class class ->
+                    class
 
 
 {-| Docs
@@ -174,4 +275,3 @@ buttonClass buttonType =
 
         SuccessButton ->
             "btn-success"
-
