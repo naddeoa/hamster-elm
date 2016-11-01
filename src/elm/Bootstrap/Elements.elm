@@ -27,18 +27,25 @@ import Html.Attributes as Attributes
 import Bootstrap.Properties as Properties exposing (..)
 
 
+{-| Helper alias that represents the normal html functions that
+the elm Html module exposes.
+-}
+type alias StandardElmHtmlFunction a =
+    List (Html.Attribute a) -> List (Html a) -> Html a
+
+
 {-| Docs private
 -}
-element : (List (Html.Attribute a) -> List (Html a) -> Html a) -> List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
+element : StandardElmHtmlFunction a -> List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
 element htmlFn properties attributes html =
     htmlFn (Properties.merge (properties) attributes) html
 
 
 {-| Docs
 -}
-button : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
+button : List (ButtonProperty) -> List (Html.Attribute a) -> List (Html a) -> Html a
 button properties attributes html =
-    element Html.button (Button BaseButton :: properties) attributes html
+    element Html.button (List.map Button (BaseButton :: properties)) attributes html
 
 
 {-| Docs

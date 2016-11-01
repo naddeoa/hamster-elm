@@ -55,7 +55,6 @@ type Msg
     | LoadFactIntoForm Fact
 
 
-
 renderForm : Model -> Html Msg
 renderForm model =
     form "activity-form"
@@ -85,10 +84,10 @@ view model =
         stopTrackingButton =
             case currentlyTracking of
                 True ->
-                    button "Stop tracking" [ PrimaryButton ] [ onClick StopTracking ]
+                    Elements.button [ Properties.PrimaryButton ] [ onClick StopTracking ] [text "Stop tracking"]
 
                 False ->
-                    button "Not currently tracking" [] [ Attributes.disabled True ]
+                    Elements.button [] [ Attributes.disabled True ] [text "Not currently tracking" ]
     in
         div []
             [ Components.titleWithSub "Hamster dashboard" (Just "the elm time tracker")

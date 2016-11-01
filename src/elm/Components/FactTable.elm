@@ -97,7 +97,7 @@ renderFact onClick fact =
         Html.tr rowAttributes
             [ Html.td []
                 [ Elements.button
-                    [ Button NormalButton, Button ExtraSmallButton ]
+                    [ NormalButton, ExtraSmallButton ]
                     [ Events.onClick (onClick fact) ]
                     [ Html.text "Load form" ]
                 ]
@@ -109,6 +109,6 @@ renderFact onClick fact =
 
 factTable : Facts -> (Fact -> onFactClick) -> Html onFactClick
 factTable facts onFactClick =
-    Elements.responsiveTable []
+    Elements.responsiveTable [ StripedTable ]
         []
         [ Elements.tbody [] [] ((List.map (renderFact onFactClick) facts) ++ [ renderTotals facts ]) ]
