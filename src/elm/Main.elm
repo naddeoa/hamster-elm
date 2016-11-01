@@ -16,18 +16,12 @@ import Components.Library as Components exposing (..)
 import Bootstrap.Elements as Elements
 import Bootstrap.Properties as Properties
 import Components.FactTable as FactTable
+import Components.FactForm as FactForm
 
 
 type alias Model =
     { facts : Facts
-    , form : Form
-    }
-
-
-type alias Form =
-    { name : String
-    , category : String
-    , tags : String
+    , form : FactForm.FactFormModel
     }
 
 
@@ -36,7 +30,7 @@ empty =
     Model [] { name = "", category = "", tags = "" }
 
 
-toFact : Form -> Fact
+toFact : FactForm.FactFormModel -> Fact
 toFact form =
     simpleFact form.name form.category (String.split "," form.tags)
 
@@ -51,28 +45,8 @@ type Msg
     | FormNameChanged String
     | FormCategoryChanged String
     | FormTagsChanged String
-    | FormSubmit Form
+    | FormSubmit FactForm.FactFormModel
     | LoadFactIntoForm Fact
-
-
-renderForm : Model -> Html Msg
-renderForm model =
-    form "activity-form"
-        (Just (onSubmit (FormSubmit model.form)))
-        [ textEntry
-            (TextEntryModel "Name" "name" (Just "coding in elm"))
-            [ value model.form.name, onInput FormNameChanged ]
-            []
-        , textEntry
-            (TextEntryModel "Category" "category" (Just "Work"))
-            [ value model.form.category, onInput FormCategoryChanged ]
-            []
-        , textEntry
-            (TextEntryModel "Tags" "tags" (Just "elm, coding"))
-            [ value model.form.tags, onInput FormTagsChanged ]
-            []
-        , formButton "Save" []
-        ]
 
 
 view : Model -> Html Msg
@@ -95,7 +69,7 @@ view model =
                 [ Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 4 ]
                     []
                     [ h2 [] [ text "What are you doing?" ]
-                    , renderForm model
+                    , FactForm.factForm model.form FormNameChanged FormCategoryChanged FormTagsChanged FormSubmit
                     ]
                 , Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 8 ]
                     []
@@ -199,7 +173,7 @@ update msg model =
                     (String.join ", " (List.map (\tag -> tag.name) fact.tags))
 
                 form =
-                    Form fact.activity.name fact.activity.category tags
+                    FactForm.FactFormModel fact.activity.name fact.activity.category tags
             in
                 ( { model | form = form }, Cmd.none )
 
