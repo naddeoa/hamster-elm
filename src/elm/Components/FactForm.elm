@@ -10,6 +10,8 @@ import Components.Library as Library exposing (form)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Fact exposing (Fact)
+import Bootstrap.Elements as Elements
+import Bootstrap.Properties as Properties
 
 
 type alias FactFormModel =
@@ -33,6 +35,7 @@ empty =
 --     | FormSubmit FactFormModel
 
 
+-- TODO I have to find a way around passing 4 of these things...
 factForm : FactFormModel -> (String -> a) -> (String -> a) -> (String -> a) -> (FactFormModel -> a) -> Html a
 factForm factForm nameHandler categoryHandler tagsHandler submitHandler=
     form "activity-form"

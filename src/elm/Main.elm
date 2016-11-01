@@ -15,6 +15,7 @@ import String
 import Components.Library as Components exposing (..)
 import Bootstrap.Elements as Elements
 import Bootstrap.Properties as Properties
+import Bootstrap.Components
 import Components.FactTable as FactTable
 import Components.FactForm as FactForm
 
@@ -69,6 +70,7 @@ view model =
                 [ Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 4 ]
                     []
                     [ h2 [] [ text "What are you doing?" ]
+                    -- TODO this is gross, I have to pass a single MyMsg TheirMsg instead, or map it
                     , FactForm.factForm model.form FormNameChanged FormCategoryChanged FormTagsChanged FormSubmit
                     ]
                 , Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 8 ]

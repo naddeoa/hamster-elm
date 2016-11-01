@@ -2,6 +2,9 @@ module Bootstrap.Elements
     exposing
         ( button
         , form
+        , formGroup
+        , formInput
+        , formLabel
         , div
         , column
         , row
@@ -53,6 +56,27 @@ button properties attributes html =
 form : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
 form properties attributes html =
     element Html.form (HorizontalFormGroup :: properties) attributes html
+
+
+{-| Docs
+-}
+formGroup : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
+formGroup properties attributes html =
+    element Html.div (FormGroup :: properties) attributes html
+
+
+{-| TODO support input-group-addon for prefix symbols
+-}
+formInput : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
+formInput properties attributes html =
+    element Html.input (FormControl :: properties) attributes html
+
+
+{-| Docs
+-}
+formLabel : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
+formLabel properties attributes html =
+    element Html.label (FormLabel :: properties) attributes html
 
 
 {-| Docs
