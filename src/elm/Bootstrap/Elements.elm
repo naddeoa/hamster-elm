@@ -20,6 +20,7 @@ module Bootstrap.Elements
         , td
         , tr
         , th
+        , p
         )
 
 {-| Docs
@@ -136,6 +137,13 @@ th properties attributes html =
 div : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
 div properties attributes html =
     element Html.div properties attributes html
+
+
+{-| Docs
+-}
+p : List (Property) -> List (Html.Attribute a) -> List (Html a) -> Html a
+p properties attributes html =
+    element Html.p properties attributes html
 
 
 {-| Docs

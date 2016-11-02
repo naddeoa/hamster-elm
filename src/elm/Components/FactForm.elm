@@ -54,3 +54,18 @@ factForm factForm nameHandler categoryHandler tagsHandler submitHandler=
             []
         , Library.formButton "Save" []
         ]
+
+
+
+
+
+
+
+
+
+-- 1. simplify textEntry and move it into Bootstrap.Components
+-- 2. use it to compose this newer form
+-- createFact : Fact -> Html a
+-- createFact fact =
+--     Elements.form
+

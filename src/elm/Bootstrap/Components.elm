@@ -3,6 +3,7 @@ module Bootstrap.Components
         ( titleWithSub
         , textEntry
         , FormColumnSizes
+        , contextBox
         )
 
 {-| Docs
@@ -33,6 +34,25 @@ titleWithSub titleText subTextMaybe =
                 , Html.i [ Attributes.style [ ( "whiteSpace", "noWrap" ) ] ] subTextHtml
                 ]
             ]
+
+
+{-| Docs
+-}
+contextBox : String -> Properties.BackgroundProperty -> Html a
+contextBox message background =
+    let
+        backgroundStyle =
+            case background of
+                Properties.PrimaryBackground ->
+                    [ ( "style", "#fff" ) ]
+
+                _ ->
+                    []
+    in
+        Elements.p
+            [ Properties.Background background ]
+            [ Attributes.style ([ ( "padding", "15px" ) ] ++ backgroundStyle) ]
+            [ Html.text message ]
 
 
 type alias FormColumnSizes =

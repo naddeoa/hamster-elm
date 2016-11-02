@@ -7,6 +7,7 @@ module Bootstrap.Properties
         , TableProperty(..)
         , TableRowProperty(..)
         , TableCellProperty(..)
+        , BackgroundProperty(..)
         , toAttributes
         , merge
         )
@@ -28,6 +29,7 @@ type Property
     | Table TableProperty
     | TableRow TableRowProperty
     | TableCell TableCellProperty
+    | Background BackgroundProperty
     | Row
     | Container
     | FormLabel
@@ -35,6 +37,14 @@ type Property
     | FormGroup
     | HorizontalFormGroup
     | ResponsiveTableContainer
+
+
+type BackgroundProperty
+    = PrimaryBackground
+    | SuccessBackground
+    | InfoBackground
+    | WarningBackground
+    | DangerBackground
 
 
 {-| Docs
@@ -204,6 +214,30 @@ generateAttributeBundle property =
 
         TableCell property ->
             { classes = tableCellClass property }
+
+        Background property ->
+            { classes = backgroundClass property }
+
+
+{-| Docs
+-}
+backgroundClass : BackgroundProperty -> String
+backgroundClass property =
+    case property of
+        PrimaryBackground ->
+            "bg-primary"
+
+        SuccessBackground ->
+            "bg-success"
+
+        InfoBackground ->
+            "bg-info"
+
+        WarningBackground ->
+            "bg-warning"
+
+        DangerBackground ->
+            "bg-danger"
 
 
 {-| Docs

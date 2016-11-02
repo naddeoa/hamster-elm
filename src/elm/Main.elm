@@ -23,12 +23,37 @@ import Components.FactForm as FactForm
 type alias Model =
     { facts : Facts
     , form : FactForm.FactFormModel
+    , userMessages : UserMessages
     }
+
+
+type alias UserMessages =
+    { errors : List String
+    }
+
+
+emptyUserMessages : UserMessages
+emptyUserMessages =
+    { errors = [] }
+
+
+renderUserMessages : UserMessages -> Html a
+renderUserMessages messages =
+    let
+        errorMessages =
+            String.join ", " messages.errors
+    in
+        case List.isEmpty messages.errors of
+            True ->
+                Html.div [] []
+
+            False ->
+                Bootstrap.Components.contextBox errorMessages Properties.DangerBackground
 
 
 empty : Model
 empty =
-    Model [] { name = "", category = "", tags = "" }
+    Model [] { name = "", category = "", tags = "" } { errors = [] }
 
 
 toFact : FactForm.FactFormModel -> Fact
@@ -59,10 +84,10 @@ view model =
         stopTrackingButton =
             case currentlyTracking of
                 True ->
-                    Elements.button [ Properties.PrimaryButton ] [ onClick StopTracking ] [text "Stop tracking"]
+                    Elements.button [ Properties.PrimaryButton ] [ onClick StopTracking ] [ text "Stop tracking" ]
 
                 False ->
-                    Elements.button [] [ Attributes.disabled True ] [text "Not currently tracking" ]
+                    Elements.button [] [ Attributes.disabled True ] [ text "Not currently tracking" ]
     in
         div []
             [ Components.titleWithSub "Hamster dashboard" (Just "the elm time tracker")
@@ -70,7 +95,8 @@ view model =
                 [ Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 4 ]
                     []
                     [ h2 [] [ text "What are you doing?" ]
-                    -- TODO this is gross, I have to pass a single MyMsg TheirMsg instead, or map it
+                    , renderUserMessages model.userMessages
+                      -- TODO this is gross, I have to pass a single MyMsg TheirMsg instead, or map it
                     , FactForm.factForm model.form FormNameChanged FormCategoryChanged FormTagsChanged FormSubmit
                     ]
                 , Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 8 ]
@@ -145,14 +171,17 @@ update msg model =
             case factMsg of
                 Success request fact ->
                     -- ( { model | facts = facts }, Cmd.none )
-                    update FetchTodaysFacts model
+                    update FetchTodaysFacts { model | userMessages = emptyUserMessages }
 
                 Error request httpError ->
                     let
                         dbg =
                             Debug.log "error response" httpError
+
+                        errorMessages =
+                            UserMessages [ "Couldn't call the Hamster API" ]
                     in
-                        ( model, Cmd.none )
+                        ( { model | userMessages = errorMessages }, Cmd.none )
 
         FetchedTodaysFacts factsMsg ->
             case factsMsg of
