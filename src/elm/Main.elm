@@ -17,23 +17,23 @@ import Bootstrap.Elements as Elements
 import Bootstrap.Properties as Properties
 import Bootstrap.Components
 import Components.FactTable as FactTable
-import Components.FactForm as FactForm
+import Components.FactForm as FactForm exposing (FactForm)
 import Components.UserMessage as UserMessage exposing (UserMessage)
 
 
 type alias Model =
     { facts : Facts
-    , form : FactForm.FactFormModel
+    , form : FactForm
     , userMessages : UserMessage
     }
 
 
 empty : Model
 empty =
-    Model [] { name = "", category = "", tags = "" } UserMessage.empty
+    Model [] FactForm.empty UserMessage.empty
 
 
-toFact : FactForm.FactFormModel -> Fact
+toFact : FactForm -> Fact
 toFact form =
     simpleFact form.name form.category (String.split "," form.tags)
 
@@ -48,7 +48,7 @@ type Msg
     | FormNameChanged String
     | FormCategoryChanged String
     | FormTagsChanged String
-    | FormSubmit FactForm.FactFormModel
+    | FormSubmit FactForm
     | LoadFactIntoForm Fact
 
 
@@ -178,7 +178,7 @@ update msg model =
                     (String.join ", " (List.map (\tag -> tag.name) fact.tags))
 
                 form =
-                    FactForm.FactFormModel fact.activity.name fact.activity.category tags
+                    FactForm fact.activity.name fact.activity.category tags
             in
                 ( { model | form = form }, Cmd.none )
 
