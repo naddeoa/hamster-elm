@@ -40,9 +40,10 @@ type Msg
     | StoppedTracking (HamsterMsg NewEndTime)
     | StopTracking
     | Log String String
-    | FormNameChanged String
-    | FormCategoryChanged String
-    | FormTagsChanged String
+    | FormChanged FactForm.FactFormChange
+      -- | FormNameChanged String
+      -- | FormCategoryChanged String
+      -- | FormTagsChanged String
     | FormSubmit FactForm
     | LoadFactIntoForm Fact
 
@@ -60,17 +61,20 @@ view model =
 
                 False ->
                     Elements.button [] [ Attributes.disabled True ] [ text "Not currently tracking" ]
+
+        formSection =
+            Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 4 ]
+                []
+                [ h2 [] [ text "What are you doing?" ]
+                , UserMessage.userMessage model.userMessages
+                  -- TODO this is gross, I have to pass a single MyMsg TheirMsg instead, or map it
+                , FactForm.factForm model.form
+                ]
     in
         div []
             [ Components.titleWithSub "Hamster dashboard" (Just "the elm time tracker")
             , container []
-                [ Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 4 ]
-                    []
-                    [ h2 [] [ text "What are you doing?" ]
-                    , UserMessage.userMessage model.userMessages
-                      -- TODO this is gross, I have to pass a single MyMsg TheirMsg instead, or map it
-                    , FactForm.factForm model.form FormNameChanged FormCategoryChanged FormTagsChanged FormSubmit
-                    ]
+                [ Html.App.map FormChanged formSection
                 , Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 8 ]
                     []
                     [ h2 [] [ text "What you've done today" ]
@@ -114,30 +118,12 @@ update msg model =
         FormSubmit form ->
             let
                 hamsterClientCmd =
-                    call (createFact (FactForm.fact form))
+                    call (createFact (FactForm.toFact form))
             in
                 ( model, Cmd.map CreatedFact hamsterClientCmd )
 
-        FormNameChanged name ->
-            let
-                { form } =
-                    model
-            in
-                ( { model | form = FactForm.name name form }, Cmd.none )
-
-        FormCategoryChanged category ->
-            let
-                { form } =
-                    model
-            in
-                ( { model | form = FactForm.category category form }, Cmd.none )
-
-        FormTagsChanged tags ->
-            let
-                { form } =
-                    model
-            in
-                ( { model | form = FactForm.tags tags form }, Cmd.none )
+        FormChanged change ->
+            ( { model | form = FactForm.handle change }, Cmd.none )
 
         CreatedFact factMsg ->
             case factMsg of
@@ -168,19 +154,7 @@ update msg model =
                 ( model, Cmd.map FetchedTodaysFacts hamsterClientCmd )
 
         LoadFactIntoForm fact ->
-            let
-                tags =
-                    (String.join ", " (List.map (\tag -> tag.name) fact.tags))
-
-                form =
-                    FactForm.empty
-                        |> FactForm.name fact.activity.name
-                        |> FactForm.category fact.activity.category
-                        |> FactForm.tags tags
-
-                -- FactForm fact.activity.name fact.activity.category tags
-            in
-                ( { model | form = form }, Cmd.none )
+            ( { model | form = FactForm.fromFact fact }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

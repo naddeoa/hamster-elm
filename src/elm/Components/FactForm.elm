@@ -1,12 +1,12 @@
 module Components.FactForm
     exposing
         ( FactForm
+        , FactFormChange
         , factForm
-        , fact
+        , toFact
+        , fromFact
         , empty
-        , name
-        , category
-        , tags
+        , handle
         )
 
 import Html exposing (Html)
@@ -69,8 +69,16 @@ getModel form =
             model
 
 
-fact : FactForm -> Fact
-fact form =
+fromFact : Fact -> FactForm
+fromFact fact =
+    empty
+        |> name fact.activity.name
+        |> category fact.activity.category
+        |> tags (String.join ", " (List.map (\tag -> tag.name) fact.tags))
+
+
+toFact : FactForm -> Fact
+toFact form =
     let
         model =
             getModel form
@@ -78,43 +86,48 @@ fact form =
         Fact.simpleFact model.name model.category (String.split "," model.tags)
 
 
+handle : FactFormChange -> FactForm
+handle change =
+    case change of
+        FormNameChanged form newName ->
+            name newName form
 
--- TODO I have to find a way around passing 4 of these things...
+        FormCategoryChanged form newCategory ->
+            category newCategory form
+
+        FormTagsChanged form newTags ->
+            tags newTags form
+
+        FormSubmit form ->
+            form
 
 
-factForm : FactForm -> (String -> a) -> (String -> a) -> (String -> a) -> (FactForm -> a) -> Html a
-factForm factForm nameHandler categoryHandler tagsHandler submitHandler =
+factForm : FactForm -> Html FactFormChange
+factForm factForm =
     let
         form =
             getModel factForm
     in
         Library.form "activity-form"
-            (Just (Events.onSubmit (submitHandler factForm)))
+            (Just (Events.onSubmit (FormSubmit factForm)))
             [ Library.textEntry
                 (Library.TextEntryModel "Name" "name" (Just "coding in elm"))
-                [ Attributes.value form.name, Events.onInput nameHandler ]
+                [ Attributes.value form.name, Events.onInput (FormNameChanged factForm) ]
                 []
             , Library.textEntry
                 (Library.TextEntryModel "Category" "category" (Just "Work"))
-                [ Attributes.value form.category, Events.onInput categoryHandler ]
+                [ Attributes.value form.category, Events.onInput (FormCategoryChanged factForm) ]
                 []
             , Library.textEntry
                 (Library.TextEntryModel "Tags" "tags" (Just "elm, coding"))
-                [ Attributes.value form.tags, Events.onInput tagsHandler ]
+                [ Attributes.value form.tags, Events.onInput (FormTagsChanged factForm) ]
                 []
             , Library.formButton "Save" []
             ]
 
 
-
--- TODO LAME
--- type FactFormChange
---     = FormNameChanged String
---     | FormCategoryChanged String
---     | FormTagsChanged String
---     | FormSubmit Model
--- 1. simplify textEntry and move it into Bootstrap.Components
--- 2. use it to compose this newer form
--- createFact : Fact -> Html a
--- createFact fact =
---     Elements.form
+type FactFormChange
+    = FormNameChanged FactForm String
+    | FormCategoryChanged FactForm String
+    | FormTagsChanged FactForm String
+    | FormSubmit FactForm
