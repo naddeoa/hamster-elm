@@ -18,42 +18,19 @@ import Bootstrap.Properties as Properties
 import Bootstrap.Components
 import Components.FactTable as FactTable
 import Components.FactForm as FactForm
+import Components.UserMessage as UserMessage exposing (UserMessage)
 
 
 type alias Model =
     { facts : Facts
     , form : FactForm.FactFormModel
-    , userMessages : UserMessages
+    , userMessages : UserMessage
     }
-
-
-type alias UserMessages =
-    { errors : List String
-    }
-
-
-emptyUserMessages : UserMessages
-emptyUserMessages =
-    { errors = [] }
-
-
-renderUserMessages : UserMessages -> Html a
-renderUserMessages messages =
-    let
-        errorMessages =
-            String.join ", " messages.errors
-    in
-        case List.isEmpty messages.errors of
-            True ->
-                Html.div [] []
-
-            False ->
-                Bootstrap.Components.contextBox errorMessages Properties.DangerBackground
 
 
 empty : Model
 empty =
-    Model [] { name = "", category = "", tags = "" } { errors = [] }
+    Model [] { name = "", category = "", tags = "" } UserMessage.empty
 
 
 toFact : FactForm.FactFormModel -> Fact
@@ -95,7 +72,7 @@ view model =
                 [ Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 4 ]
                     []
                     [ h2 [] [ text "What are you doing?" ]
-                    , renderUserMessages model.userMessages
+                    , UserMessage.userMessage model.userMessages
                       -- TODO this is gross, I have to pass a single MyMsg TheirMsg instead, or map it
                     , FactForm.factForm model.form FormNameChanged FormCategoryChanged FormTagsChanged FormSubmit
                     ]
@@ -171,15 +148,12 @@ update msg model =
             case factMsg of
                 Success request fact ->
                     -- ( { model | facts = facts }, Cmd.none )
-                    update FetchTodaysFacts { model | userMessages = emptyUserMessages }
+                    update FetchTodaysFacts { model | userMessages = UserMessage.empty }
 
                 Error request httpError ->
                     let
-                        dbg =
-                            Debug.log "error response" httpError
-
                         errorMessages =
-                            UserMessages [ "Couldn't call the Hamster API" ]
+                            UserMessage.ofErrors [ "Couldn't call the Hamster API" ]
                     in
                         ( { model | userMessages = errorMessages }, Cmd.none )
 
