@@ -1,9 +1,12 @@
 module Components.FactForm
     exposing
-        ( factForm
+        ( FactForm
+        , factForm
+        , fact
         , empty
-          -- , FactFormChange(..)
-        , FactForm
+        , name
+        , category
+        , tags
         )
 
 import Html exposing (Html)
@@ -16,23 +19,63 @@ import Bootstrap.Properties as Properties
 import String
 
 
--- TODO next up, make FactForm an opaque union type and move all of the FactForm logic into this file
+type FactForm
+    = FactForm' Model
 
-type alias FactForm =
+
+type alias Model =
     { name : String
     , category : String
     , tags : String
     }
 
 
+name : String -> FactForm -> FactForm
+name name form =
+    let
+        formModel =
+            getModel form
+    in
+        FactForm' { formModel | name = name }
+
+
+category : String -> FactForm -> FactForm
+category category form =
+    let
+        formModel =
+            getModel form
+    in
+        FactForm' { formModel | category = category }
+
+
+tags : String -> FactForm -> FactForm
+tags tags form =
+    let
+        formModel =
+            getModel form
+    in
+        FactForm' { formModel | tags = tags }
+
+
 empty : FactForm
 empty =
-    { name = "", category = "", tags = "" }
+    FactForm' { name = "", category = "", tags = "" }
 
 
-toFact : FactForm -> Fact
-toFact form =
-    Fact.simpleFact form.name form.category (String.split "," form.tags)
+getModel : FactForm -> Model
+getModel form =
+    case form of
+        FactForm' model ->
+            model
+
+
+fact : FactForm -> Fact
+fact form =
+    let
+        model =
+            getModel form
+    in
+        Fact.simpleFact model.name model.category (String.split "," model.tags)
 
 
 
@@ -41,22 +84,26 @@ toFact form =
 
 factForm : FactForm -> (String -> a) -> (String -> a) -> (String -> a) -> (FactForm -> a) -> Html a
 factForm factForm nameHandler categoryHandler tagsHandler submitHandler =
-    form "activity-form"
-        (Just (Events.onSubmit (submitHandler factForm)))
-        [ Library.textEntry
-            (Library.TextEntryModel "Name" "name" (Just "coding in elm"))
-            [ Attributes.value factForm.name, Events.onInput nameHandler ]
-            []
-        , Library.textEntry
-            (Library.TextEntryModel "Category" "category" (Just "Work"))
-            [ Attributes.value factForm.category, Events.onInput categoryHandler ]
-            []
-        , Library.textEntry
-            (Library.TextEntryModel "Tags" "tags" (Just "elm, coding"))
-            [ Attributes.value factForm.tags, Events.onInput tagsHandler ]
-            []
-        , Library.formButton "Save" []
-        ]
+    let
+        form =
+            getModel factForm
+    in
+        Library.form "activity-form"
+            (Just (Events.onSubmit (submitHandler factForm)))
+            [ Library.textEntry
+                (Library.TextEntryModel "Name" "name" (Just "coding in elm"))
+                [ Attributes.value form.name, Events.onInput nameHandler ]
+                []
+            , Library.textEntry
+                (Library.TextEntryModel "Category" "category" (Just "Work"))
+                [ Attributes.value form.category, Events.onInput categoryHandler ]
+                []
+            , Library.textEntry
+                (Library.TextEntryModel "Tags" "tags" (Just "elm, coding"))
+                [ Attributes.value form.tags, Events.onInput tagsHandler ]
+                []
+            , Library.formButton "Save" []
+            ]
 
 
 
@@ -65,7 +112,7 @@ factForm factForm nameHandler categoryHandler tagsHandler submitHandler =
 --     = FormNameChanged String
 --     | FormCategoryChanged String
 --     | FormTagsChanged String
---     | FormSubmit FactForm
+--     | FormSubmit Model
 -- 1. simplify textEntry and move it into Bootstrap.Components
 -- 2. use it to compose this newer form
 -- createFact : Fact -> Html a

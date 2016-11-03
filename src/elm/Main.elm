@@ -33,11 +33,6 @@ empty =
     Model [] FactForm.empty UserMessage.empty
 
 
-toFact : FactForm -> Fact
-toFact form =
-    simpleFact form.name form.category (String.split "," form.tags)
-
-
 type Msg
     = FetchTodaysFacts
     | FetchedTodaysFacts (HamsterMsg Facts)
@@ -119,7 +114,7 @@ update msg model =
         FormSubmit form ->
             let
                 hamsterClientCmd =
-                    call (createFact (toFact form))
+                    call (createFact (FactForm.fact form))
             in
                 ( model, Cmd.map CreatedFact hamsterClientCmd )
 
@@ -128,21 +123,21 @@ update msg model =
                 { form } =
                     model
             in
-                ( { model | form = { form | name = name } }, Cmd.none )
+                ( { model | form = FactForm.name name form }, Cmd.none )
 
         FormCategoryChanged category ->
             let
                 { form } =
                     model
             in
-                ( { model | form = { form | category = category } }, Cmd.none )
+                ( { model | form = FactForm.category category form }, Cmd.none )
 
         FormTagsChanged tags ->
             let
                 { form } =
                     model
             in
-                ( { model | form = { form | tags = tags } }, Cmd.none )
+                ( { model | form = FactForm.tags tags form }, Cmd.none )
 
         CreatedFact factMsg ->
             case factMsg of
@@ -178,7 +173,12 @@ update msg model =
                     (String.join ", " (List.map (\tag -> tag.name) fact.tags))
 
                 form =
-                    FactForm fact.activity.name fact.activity.category tags
+                    FactForm.empty
+                        |> FactForm.name fact.activity.name
+                        |> FactForm.category fact.activity.category
+                        |> FactForm.tags tags
+
+                -- FactForm fact.activity.name fact.activity.category tags
             in
                 ( { model | form = form }, Cmd.none )
 
