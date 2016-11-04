@@ -59,13 +59,13 @@ type alias FormColumnSizes =
     List ( Properties.ColumnProperty, Properties.ColumnProperty )
 
 
-{-| Docs
+{-| Docs TODO where do you pass in onInput? This has to change
 -}
-textEntry : String -> String -> String -> FormColumnSizes -> Html a
-textEntry label id placeholder customSizes =
+textEntry : String -> String -> String -> List (Html.Attribute a) ->  FormColumnSizes -> Html a
+textEntry label id placeholder attributes customSizes =
     formSection customSizes
         [ Elements.formLabel [] [ Attributes.for id ] [ Html.text label ] ]
-        [ Elements.formInput [] [ Attributes.id id, Attributes.placeholder placeholder ] [] ]
+        [ Elements.formInput [] (attributes ++ [ Attributes.id id, Attributes.placeholder placeholder ]) [] ]
 
 
 {-| Docs

@@ -1,7 +1,7 @@
 module Components.FactForm
     exposing
         ( FactForm
-        , FactFormChange
+        , Event(..)
         , factForm
         , toFact
         , fromFact
@@ -10,17 +10,28 @@ module Components.FactForm
         )
 
 import Html exposing (Html)
-import Components.Library as Library exposing (form)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Fact exposing (Fact)
 import Bootstrap.Elements as Elements
+import Bootstrap.Components as Components
 import Bootstrap.Properties as Properties
 import String
 
 
 type FactForm
     = FactForm' Model
+
+
+type Field
+    = Name
+    | Category
+    | Tags
+
+
+type Event
+    = Change FactForm Field String
+    | Submit FactForm
 
 
 type alias Model =
@@ -86,48 +97,53 @@ toFact form =
         Fact.simpleFact model.name model.category (String.split "," model.tags)
 
 
-handle : FactFormChange -> FactForm
+handle : Event -> FactForm
 handle change =
     case change of
-        FormNameChanged form newName ->
-            name newName form
-
-        FormCategoryChanged form newCategory ->
-            category newCategory form
-
-        FormTagsChanged form newTags ->
-            tags newTags form
-
-        FormSubmit form ->
+        Submit form ->
             form
 
+        Change form field value ->
+            case field of
+                Name ->
+                    name value form
 
-factForm : FactForm -> Html FactFormChange
+                Category ->
+                    category value form
+
+                Tags ->
+                    tags value form
+
+
+factForm : FactForm -> Html Event
 factForm factForm =
     let
         form =
             getModel factForm
     in
-        Library.form "activity-form"
-            (Just (Events.onSubmit (FormSubmit factForm)))
-            [ Library.textEntry
-                (Library.TextEntryModel "Name" "name" (Just "coding in elm"))
-                [ Attributes.value form.name, Events.onInput (FormNameChanged factForm) ]
+        Elements.form
+            []
+            [ Events.onSubmit (Submit factForm) ]
+            [ Components.textEntry "Name"
+                "name"
+                "coding in elm"
+                [ Attributes.value form.name
+                , Events.onInput <| Change factForm Name
+                ]
                 []
-            , Library.textEntry
-                (Library.TextEntryModel "Category" "category" (Just "Work"))
-                [ Attributes.value form.category, Events.onInput (FormCategoryChanged factForm) ]
+            , Components.textEntry "Category"
+                "category"
+                "Work"
+                [ Attributes.value form.category
+                , Events.onInput <| Change factForm Category
+                ]
                 []
-            , Library.textEntry
-                (Library.TextEntryModel "Tags" "tags" (Just "elm, coding"))
-                [ Attributes.value form.tags, Events.onInput (FormTagsChanged factForm) ]
+            , Components.textEntry "Tags"
+                "tags"
+                "elm, coding"
+                [ Attributes.value form.tags
+                , Events.onInput <| Change factForm Tags
+                ]
                 []
-            , Library.formButton "Save" []
+            , Elements.button [ Properties.PrimaryButton ] [] [ Html.text "Save" ]
             ]
-
-
-type FactFormChange
-    = FormNameChanged FactForm String
-    | FormCategoryChanged FactForm String
-    | FormTagsChanged FactForm String
-    | FormSubmit FactForm

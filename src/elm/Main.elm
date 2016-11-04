@@ -12,10 +12,9 @@ import Fact exposing (Fact, simpleFact)
 import NewEndTime exposing (NewEndTime)
 import Date exposing (Date)
 import String
-import Components.Library as Components exposing (..)
 import Bootstrap.Elements as Elements
 import Bootstrap.Properties as Properties
-import Bootstrap.Components
+import Bootstrap.Components as Components
 import Components.FactTable as FactTable
 import Components.FactForm as FactForm exposing (FactForm)
 import Components.UserMessage as UserMessage exposing (UserMessage)
@@ -40,11 +39,8 @@ type Msg
     | StoppedTracking (HamsterMsg NewEndTime)
     | StopTracking
     | Log String String
-    | FormChanged FactForm.FactFormChange
-      -- | FormNameChanged String
-      -- | FormCategoryChanged String
-      -- | FormTagsChanged String
-    | FormSubmit FactForm
+    | FormChanged FactForm.Event
+    | CreateFact FactForm
     | LoadFactIntoForm Fact
 
 
@@ -67,13 +63,12 @@ view model =
                 []
                 [ h2 [] [ text "What are you doing?" ]
                 , UserMessage.userMessage model.userMessages
-                  -- TODO this is gross, I have to pass a single MyMsg TheirMsg instead, or map it
                 , FactForm.factForm model.form
                 ]
     in
         div []
             [ Components.titleWithSub "Hamster dashboard" (Just "the elm time tracker")
-            , container []
+            , Elements.container []
                 [ Html.App.map FormChanged formSection
                 , Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 8 ]
                     []
@@ -115,15 +110,20 @@ update msg model =
                     in
                         ( model, Cmd.none )
 
-        FormSubmit form ->
+        CreateFact form ->
             let
                 hamsterClientCmd =
                     call (createFact (FactForm.toFact form))
             in
                 ( model, Cmd.map CreatedFact hamsterClientCmd )
 
-        FormChanged change ->
-            ( { model | form = FactForm.handle change }, Cmd.none )
+        FormChanged event ->
+            case event of
+                FactForm.Submit form ->
+                    update (CreateFact form) { model | form = form }
+
+                FactForm.Change form field string ->
+                    ( { model | form = FactForm.handle event }, Cmd.none )
 
         CreatedFact factMsg ->
             case factMsg of
