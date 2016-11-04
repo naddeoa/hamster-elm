@@ -2,7 +2,7 @@ module Components.FactForm
     exposing
         ( FactForm
         , Event(..)
-        , factForm
+        , create
         , toFact
         , fromFact
         , empty
@@ -20,7 +20,11 @@ import String
 
 
 type FactForm
-    = FactForm' Model
+    = FactForm'
+        { name : String
+        , category : String
+        , tags : String
+        }
 
 
 type Field
@@ -34,67 +38,23 @@ type Event
     | Submit FactForm
 
 
-type alias Model =
-    { name : String
-    , category : String
-    , tags : String
-    }
-
-
-name : String -> FactForm -> FactForm
-name name form =
-    let
-        formModel =
-            getModel form
-    in
-        FactForm' { formModel | name = name }
-
-
-category : String -> FactForm -> FactForm
-category category form =
-    let
-        formModel =
-            getModel form
-    in
-        FactForm' { formModel | category = category }
-
-
-tags : String -> FactForm -> FactForm
-tags tags form =
-    let
-        formModel =
-            getModel form
-    in
-        FactForm' { formModel | tags = tags }
-
-
 empty : FactForm
 empty =
     FactForm' { name = "", category = "", tags = "" }
 
 
-getModel : FactForm -> Model
-getModel form =
-    case form of
-        FactForm' model ->
-            model
-
-
 fromFact : Fact -> FactForm
 fromFact fact =
-    empty
-        |> name fact.activity.name
-        |> category fact.activity.category
-        |> tags (String.join ", " (List.map (\tag -> tag.name) fact.tags))
+    FactForm'
+        { name = fact.activity.name
+        , category = fact.activity.category
+        , tags = String.join ", " (List.map (\tag -> tag.name) fact.tags)
+        }
 
 
 toFact : FactForm -> Fact
-toFact form =
-    let
-        model =
-            getModel form
-    in
-        Fact.simpleFact model.name model.category (String.split "," model.tags)
+toFact (FactForm' { name, category, tags }) =
+    Fact.simpleFact name category (String.split "," tags)
 
 
 handle : Event -> FactForm
@@ -103,27 +63,27 @@ handle change =
         Submit form ->
             form
 
-        Change form field value ->
+        Change (FactForm' form) field value ->
             case field of
                 Name ->
-                    name value form
+                    FactForm' { form | name = value }
 
                 Category ->
-                    category value form
+                    FactForm' { form | category = value }
 
                 Tags ->
-                    tags value form
+                    FactForm' { form | tags = value }
 
 
-factForm : FactForm -> Html Event
-factForm factForm =
+create : FactForm -> Html Event
+create factForm =
     let
-        form =
-            getModel factForm
+        (FactForm' form) =
+            factForm
     in
         Elements.form
             []
-            [ Events.onSubmit (Submit factForm) ]
+            [ Events.onSubmit <| Submit factForm ]
             [ Components.textEntry "Name"
                 "name"
                 "coding in elm"

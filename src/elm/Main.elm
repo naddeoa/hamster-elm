@@ -63,7 +63,7 @@ view model =
                 []
                 [ h2 [] [ text "What are you doing?" ]
                 , UserMessage.userMessage model.userMessages
-                , FactForm.factForm model.form
+                , FactForm.create model.form
                 ]
     in
         div []
