@@ -63,7 +63,7 @@ userMessage : UserMessage -> Html a
 userMessage messages =
     case hasErrors messages of
         True ->
-            Html.div [] []
+            Components.contextBox (String.join ", " (getErrors messages)) Properties.DangerBackground
 
         False ->
             Components.contextBox (String.join ", " (getErrors messages)) Properties.DangerBackground

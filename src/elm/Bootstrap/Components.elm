@@ -13,6 +13,7 @@ import Html exposing (Html)
 import Html.Attributes as Attributes
 import Bootstrap.Properties as Properties
 import Bootstrap.Elements as Elements
+import String
 
 
 {-| Docs
@@ -36,21 +37,39 @@ titleWithSub titleText subTextMaybe =
             ]
 
 
+transitionEverything : List Properties.Property
+transitionEverything =
+    [ Properties.HtmlAttribute <| Properties.Class "hamster-transition" ]
+
+
+hidden : List Properties.Property
+hidden =
+    [ Properties.HtmlAttribute <| Properties.Class "hamster-hidden" ]
+
+
 {-| Docs
 -}
 contextBox : String -> Properties.BackgroundProperty -> Html a
 contextBox message background =
     let
+        visibility =
+            case String.isEmpty message of
+                True ->
+                    hidden
+
+                False ->
+                    []
+
         backgroundStyle =
             case background of
                 Properties.PrimaryBackground ->
-                    [ ( "style", "#fff" ) ]
+                    [ ( "backgroundColor", "#fff" ) ]
 
                 _ ->
                     []
     in
         Elements.p
-            [ Properties.Background background ]
+            ([ Properties.Background background ] ++ visibility ++ transitionEverything)
             [ Attributes.style ([ ( "padding", "15px" ) ] ++ backgroundStyle) ]
             [ Html.text message ]
 
@@ -61,7 +80,7 @@ type alias FormColumnSizes =
 
 {-| Docs TODO where do you pass in onInput? This has to change
 -}
-textEntry : String -> String -> String -> List (Html.Attribute a) ->  FormColumnSizes -> Html a
+textEntry : String -> String -> String -> List (Html.Attribute a) -> FormColumnSizes -> Html a
 textEntry label id placeholder attributes customSizes =
     formSection customSizes
         [ Elements.formLabel [] [ Attributes.for id ] [ Html.text label ] ]

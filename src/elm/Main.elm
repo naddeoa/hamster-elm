@@ -36,6 +36,7 @@ type Msg
     | FetchedTodaysFacts (HamsterMsg Facts)
     | CreatedFact (HamsterMsg Fact)
     | StoppedTracking (HamsterMsg NewEndTime)
+    | APICallFinished (List String)
     | StopTracking
     | Log String String
     | FormChanged FactForm.Event
@@ -62,14 +63,14 @@ view model =
             Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 4 ]
                 []
                 [ h2 [] [ text "What are you doing?" ]
-                , UserMessage.userMessage model.userMessages
                 , FactForm.create model.form
                 ]
     in
         div []
             [ Components.titleWithSub "Hamster dashboard" (Just "the elm time tracker")
             , Elements.container []
-                [ Html.App.map FormChanged formSection
+                [ UserMessage.userMessage model.userMessages
+                , Html.App.map FormChanged formSection
                 , Elements.column [ Properties.ExtraSmallColumn 12, Properties.MediumColumn 8 ]
                     []
                     [ h2 [] [ text "What you've done today" ]
@@ -132,11 +133,7 @@ update msg model =
                     update FetchTodaysFacts { model | userMessages = UserMessage.empty }
 
                 Error request httpError ->
-                    let
-                        errorMessages =
-                            UserMessage.ofErrors [ "Couldn't call the Hamster API", toString httpError ]
-                    in
-                        ( { model | userMessages = errorMessages }, Cmd.none )
+                    update (APICallFinished [ toString httpError ]) model
 
         FetchedTodaysFacts factsMsg ->
             case factsMsg of
@@ -144,11 +141,7 @@ update msg model =
                     ( { model | facts = facts, userMessages = UserMessage.empty }, Cmd.none )
 
                 Error request httpError ->
-                    let
-                        errors =
-                            UserMessage.ofErrors [ "Couldn't call the Hamster API", toString httpError ]
-                    in
-                        ( { model | userMessages = errors }, Cmd.none )
+                    update (APICallFinished [ toString httpError ]) model
 
         FetchTodaysFacts ->
             let
@@ -163,10 +156,13 @@ update msg model =
         Refresh time ->
             update FetchTodaysFacts model
 
+        APICallFinished errors ->
+            ( { model | userMessages = UserMessage.ofErrors <| [ "Couldn't call the Hamster API" ] ++ errors }, Cmd.none )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every (Time.second * 5) Refresh
+    Time.every (Time.second * 3) Refresh
 
 
 init : ( Model, Cmd Msg )

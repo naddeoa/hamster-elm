@@ -1,0 +1,11 @@
+
+.hamster-transition {
+    transition: all 150ms ease;
+}
+
+.hamster-hidden {
+    height: 0px !important;
+    opacity: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
