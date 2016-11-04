@@ -1,4 +1,4 @@
-module Facts exposing (Facts, decode, encode, toHtml, empty)
+module Facts exposing (Facts, decode, encode, toHtml, empty, isEmpty)
 
 import Html exposing (Html, text, ul, li)
 import Json.Decode as Json exposing ((:=), string, int, list, object1, object7)
@@ -14,6 +14,11 @@ type alias Facts =
 empty : Facts
 empty =
     []
+
+
+isEmpty : Facts -> Bool
+isEmpty facts =
+    List.isEmpty facts
 
 
 decode : Json.Decoder Facts

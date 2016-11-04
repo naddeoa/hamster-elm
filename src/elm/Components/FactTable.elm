@@ -109,6 +109,10 @@ renderFact onClick fact =
 
 factTable : Facts -> (Fact -> onFactClick) -> Html onFactClick
 factTable facts onFactClick =
-    Elements.responsiveTable [ StripedTable ]
-        []
-        [ Elements.tbody [] [] ((List.map (renderFact onFactClick) facts) ++ [ renderTotals facts ]) ]
+    case Facts.isEmpty facts of
+        True ->
+            Html.p [] [Html.text "Nothing to see here..."]
+        False ->
+            Elements.responsiveTable [ StripedTable ]
+                []
+                [ Elements.tbody [] [] ((List.map (renderFact onFactClick) facts) ++ [ renderTotals facts ]) ]
