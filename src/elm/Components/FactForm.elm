@@ -87,23 +87,17 @@ create factForm =
             [ Components.textEntry "Name"
                 "name"
                 "coding in elm"
-                [ Attributes.value form.name
-                , Events.onInput <| Change factForm Name
-                ]
+                [ Attributes.value form.name, Events.onInput <| Change factForm Name ]
                 []
             , Components.textEntry "Category"
                 "category"
                 "Work"
-                [ Attributes.value form.category
-                , Events.onInput <| Change factForm Category
-                ]
+                [ Attributes.value form.category, Events.onInput <| Change factForm Category ]
                 []
             , Components.textEntry "Tags"
                 "tags"
                 "elm, coding"
-                [ Attributes.value form.tags
-                , Events.onInput <| Change factForm Tags
-                ]
+                [ Attributes.value form.tags, Events.onInput <| Change factForm Tags ]
                 []
             , Elements.button [ Properties.PrimaryButton ] [] [ Html.text "Save" ]
             ]

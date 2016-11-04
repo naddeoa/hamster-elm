@@ -4,6 +4,7 @@ import Html exposing (Html, div, text, input, h1, h2, label, ul, li)
 import Html.Attributes as Attributes exposing (for, id, placeholder, value)
 import Html.Events exposing (onSubmit, onInput, onClick)
 import Html.App
+import Time exposing (Time)
 import HamsterAPI exposing (HamsterMsg(Success, Error))
 import HamsterClient exposing (call)
 import HamsterCalls exposing (getTodaysFacts, createFact, stopTracking)
@@ -42,6 +43,7 @@ type Msg
     | FormChanged FactForm.Event
     | CreateFact FactForm
     | LoadFactIntoForm Fact
+    | Tick Time
 
 
 view : Model -> Html Msg
@@ -134,17 +136,21 @@ update msg model =
                 Error request httpError ->
                     let
                         errorMessages =
-                            UserMessage.ofErrors [ "Couldn't call the Hamster API" ]
+                            UserMessage.ofErrors [ "Couldn't call the Hamster API", toString httpError ]
                     in
                         ( { model | userMessages = errorMessages }, Cmd.none )
 
         FetchedTodaysFacts factsMsg ->
             case factsMsg of
                 Success request facts ->
-                    ( { model | facts = facts }, Cmd.none )
+                    ( { model | facts = facts, userMessages = UserMessage.empty }, Cmd.none )
 
                 Error request httpError ->
-                    ( model, Cmd.none )
+                    let
+                        errors =
+                            UserMessage.ofErrors [ "Couldn't call the Hamster API", toString httpError ]
+                    in
+                        ( { model | userMessages = errors }, Cmd.none )
 
         FetchTodaysFacts ->
             let
@@ -156,10 +162,13 @@ update msg model =
         LoadFactIntoForm fact ->
             ( { model | form = FactForm.fromFact fact }, Cmd.none )
 
+        Tick time ->
+            update FetchTodaysFacts model
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Time.every (Time.second * 3) Tick
 
 
 init : ( Model, Cmd Msg )
