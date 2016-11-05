@@ -1,28 +1,26 @@
 module HamsterClient exposing (call, handle)
 
-import Http exposing (empty)
+import Http
 import Task
-import HamsterAPI as API exposing (HamsterResponse, HamsterMsg(Error), HamsterMsg(Success), HamsterMsg)
+import HamsterAPI as API exposing (HamsterResponse, HamsterMsg(Error, Success))
 import Json.Decode as Json exposing ((:=), string, int, object2)
 import Json.Encode as Encode
-import Html exposing (Html, text, ul, li)
-import Html.App
-import HamsterAPI as API exposing (HamsterRequest, HttpMethod(GET), HttpMethod(POST))
+import HamsterAPI as API exposing (HamsterRequest, HttpMethod(GET, POST))
 import HamsterCalls
-import Debug
 import Task exposing (Task)
 
 
 post : Json.Decoder value -> String -> Http.Body -> Task Http.Error value
 post decoder url body =
-  let request =
-        { verb = "POST"
-        , headers = [("Content-Type","application/json")]
-        , url = url
-        , body = body
-        }
-  in
-      Http.fromJson decoder (Http.send Http.defaultSettings request)
+    let
+        request =
+            { verb = "POST"
+            , headers = [ ( "Content-Type", "application/json" ) ]
+            , url = url
+            , body = body
+            }
+    in
+        Http.fromJson decoder (Http.send Http.defaultSettings request)
 
 
 {-| Handle a call response from the Hamster API.
@@ -31,7 +29,7 @@ handle : HamsterMsg payload -> ( HamsterResponse payload, Cmd (HamsterMsg payloa
 handle msg =
     case msg of
         Success hamsterCall payload ->
-            ( HamsterResponse [] (Just payload) hamsterCall.toHtml, Cmd.none )
+            ( HamsterResponse [] (Just payload), Cmd.none )
 
         Error hamsterCall err ->
             case err of
@@ -45,24 +43,16 @@ handle msg =
                                 Just payload ->
                                     Encode.encode 0 (hamsterCall.toJsonValue payload)
                     in
-                        ( HamsterResponse
-                            [ toString hamsterCall
-                            , toString err
-                            , body
-                            ]
-                            Nothing
-                            hamsterCall.toHtml
-                        , Cmd.none
-                        )
+                        ( HamsterResponse [ toString hamsterCall, toString err, body ] Nothing, Cmd.none )
 
                 Http.Timeout ->
-                    ( HamsterResponse [ toString hamsterCall, toString err ] Nothing hamsterCall.toHtml, Cmd.none )
+                    ( HamsterResponse [ toString hamsterCall, toString err ] Nothing, Cmd.none )
 
                 Http.UnexpectedPayload payload ->
-                    ( HamsterResponse [ toString hamsterCall, toString err, payload ] Nothing hamsterCall.toHtml, Cmd.none )
+                    ( HamsterResponse [ toString hamsterCall, toString err, payload ] Nothing, Cmd.none )
 
                 Http.BadResponse status response ->
-                    ( HamsterResponse [ toString hamsterCall, toString err, toString status, response ] Nothing hamsterCall.toHtml, Cmd.none )
+                    ( HamsterResponse [ toString hamsterCall, toString err, toString status, response ] Nothing, Cmd.none )
 
 
 {-| Perform a call to the Hamster REST endpoint using the supplied `Json.Decoder`.
@@ -77,7 +67,7 @@ call hamsterRequest =
                         body =
                             case hamsterRequest.body of
                                 Nothing ->
-                                    empty
+                                    Http.empty
 
                                 Just payload ->
                                     Http.string (Encode.encode 0 (hamsterRequest.toJsonValue payload))

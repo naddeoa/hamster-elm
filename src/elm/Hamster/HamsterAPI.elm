@@ -24,7 +24,6 @@ import Http exposing (Body)
 type alias HamsterResponse payload =
     { errors : List String
     , data : Maybe payload
-    , toHtml : payload -> Html (HamsterMsg payload)
     }
 
 
@@ -32,7 +31,7 @@ type alias HamsterResponse payload =
 -}
 emptyResponse : HamsterResponse payload
 emptyResponse =
-    HamsterResponse [] Nothing (\payload -> text "")
+    HamsterResponse [] Nothing
 
 
 {-| Create a response object that contains the given payload, without any errors
@@ -40,7 +39,7 @@ and with a simple toString function for its html renderer.
 -}
 responseOfPayload : payload -> HamsterResponse payload
 responseOfPayload payload =
-    HamsterResponse [] (Just payload) (\payload -> text (toString payload))
+    HamsterResponse [] (Just payload)
 
 
 {-| This is what the call files in this package return and what the client expects to consume.
@@ -49,18 +48,19 @@ Hamster REST API.
 -}
 type alias HamsterRequest payload =
     { decoder : Json.Decoder payload
-    , toHtml : payload -> Html (HamsterMsg payload)
     , method : String
     , toJsonValue : payload -> Value
     , verb : HttpMethod
     , body : Maybe payload
     }
 
+
 {-| Enumeration of the supported verbs in the Hamster API
 -}
 type HttpMethod
     = POST
     | GET
+
 
 {-| Convert an `HttpMethod` into its string form. Useful for actually making requests with them.
 

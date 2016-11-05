@@ -5,7 +5,7 @@
   "license": "BSD3",
     "source-directories": [
       "src/elm",
-      "src/elm/hamster",
+      "src/elm/Hamster",
       "src/elm/Components",
       "src/elm/Bootstrap"
   ],

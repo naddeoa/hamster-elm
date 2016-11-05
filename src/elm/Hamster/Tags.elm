@@ -1,4 +1,4 @@
-module Tags exposing (Tags, decode, encode, toHamsterQuery, toHtml)
+module Tags exposing (Tags, decode, encode, toHamsterQuery)
 
 import Html exposing (Html, text, ul, li)
 import Json.Decode as Json exposing ((:=), string, int, object2)
@@ -27,9 +27,3 @@ encode tags =
 toHamsterQuery : Tags -> String
 toHamsterQuery tags =
     (String.join " " (List.map (Tag.toHamsterQuery) tags))
-
-
-toHtml : Tags -> Html a
-toHtml tags =
-    ul []
-        (List.map (Tag.toHtml) tags)

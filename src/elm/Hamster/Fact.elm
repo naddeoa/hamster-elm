@@ -1,4 +1,4 @@
-module Fact exposing (Fact, decode, encode, toHtml, toHamsterQuery, simpleFact, fromStrings, inProgress)
+module Fact exposing (Fact, decode, encode, toHamsterQuery, simpleFact, fromStrings, inProgress)
 
 import Html exposing (Html, text, ul, li)
 import EncodeExtras exposing (encodeMaybe)
@@ -85,9 +85,3 @@ encode fact =
 toHamsterQuery : Fact -> String
 toHamsterQuery fact =
     (Activity.toHamsterQuery fact.activity) ++ ", " ++ (Tags.toHamsterQuery fact.tags)
-
-
-toHtml : Fact -> Html a
-toHtml fact =
-    li []
-        [ text (toHamsterQuery fact) ]

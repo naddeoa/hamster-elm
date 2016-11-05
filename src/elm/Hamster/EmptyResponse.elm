@@ -1,4 +1,4 @@
-module EmptyResponse exposing (EmptyResponse, decode, encode, toHtml, toHamsterQuery)
+module EmptyResponse exposing (EmptyResponse, decode, encode, toHamsterQuery)
 
 import Html exposing (Html, div)
 import Json.Decode as Json exposing ((:=), string, int, float, list, object1, object7)
@@ -27,8 +27,3 @@ encode fact =
 toHamsterQuery : EmptyResponse -> String
 toHamsterQuery response =
     ""
-
-
-toHtml : EmptyResponse -> Html a
-toHtml fact =
-    div [] []

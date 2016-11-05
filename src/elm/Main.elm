@@ -2,14 +2,14 @@ module Main exposing (..)
 
 import Html exposing (Html, div, text, input, h1, h2, label, ul, li)
 import Html.Attributes as Attributes exposing (for, id, placeholder, value)
-import Html.Events exposing (onSubmit, onInput, onClick)
+import Html.Events as Events
 import Html.App
 import Time exposing (Time)
-import HamsterAPI exposing (HamsterMsg(Success, Error))
-import HamsterClient exposing (call)
-import HamsterCalls exposing (getTodaysFacts, createFact, stopTracking)
+import HamsterAPI
+import HamsterClient
+import HamsterCalls
 import Facts exposing (Facts)
-import Fact exposing (Fact, simpleFact)
+import Fact exposing (Fact)
 import NewEndTime exposing (NewEndTime)
 import Bootstrap.Elements as Elements
 import Bootstrap.Properties as Properties
@@ -33,12 +33,11 @@ empty =
 
 type Msg
     = FetchTodaysFacts
-    | FetchedTodaysFacts (HamsterMsg Facts)
-    | CreatedFact (HamsterMsg Fact)
-    | StoppedTracking (HamsterMsg NewEndTime)
+    | FetchedTodaysFacts (HamsterAPI.HamsterMsg Facts)
+    | CreatedFact (HamsterAPI.HamsterMsg Fact)
+    | StoppedTracking (HamsterAPI.HamsterMsg NewEndTime)
     | APICallFinished (List String)
     | StopTracking
-    | Log String String
     | FormChanged FactForm.Event
     | CreateFact FactForm
     | LoadFactIntoForm Fact
@@ -48,13 +47,10 @@ type Msg
 view : Model -> Html Msg
 view model =
     let
-        currentlyTracking =
-            (List.any Fact.inProgress model.facts)
-
         stopTrackingButton =
-            case currentlyTracking of
+            case Facts.inProgress model.facts of
                 True ->
-                    Elements.button [ Properties.PrimaryButton ] [ onClick StopTracking ] [ text "Stop tracking" ]
+                    Elements.button [ Properties.PrimaryButton ] [ Events.onClick StopTracking ] [ text "Stop tracking" ]
 
                 False ->
                     Elements.button [] [ Attributes.disabled True ] [ text "Not currently tracking" ]
@@ -85,36 +81,25 @@ view model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Log name string ->
-            let
-                dbg =
-                    Debug.log name string
-            in
-                ( model, Cmd.none )
-
         StopTracking ->
             let
                 hamsterClientCmd =
-                    call stopTracking
+                    HamsterClient.call HamsterCalls.stopTracking
             in
                 ( model, Cmd.map StoppedTracking hamsterClientCmd )
 
         StoppedTracking newEndTimeMsg ->
             case newEndTimeMsg of
-                Success request fact ->
+                HamsterAPI.Success request fact ->
                     update FetchTodaysFacts model
 
-                Error request httpError ->
-                    let
-                        dbg =
-                            Debug.log "error response" httpError
-                    in
-                        ( model, Cmd.none )
+                HamsterAPI.Error request httpError ->
+                    ( model, Cmd.none )
 
         CreateFact form ->
             let
                 hamsterClientCmd =
-                    call (createFact (FactForm.toFact form))
+                    HamsterClient.call (HamsterCalls.createFact (FactForm.toFact form))
             in
                 ( model, Cmd.map CreatedFact hamsterClientCmd )
 
@@ -128,25 +113,24 @@ update msg model =
 
         CreatedFact factMsg ->
             case factMsg of
-                Success request fact ->
-                    -- ( { model | facts = facts }, Cmd.none )
+                HamsterAPI.Success request fact ->
                     update FetchTodaysFacts { model | userMessages = UserMessage.empty }
 
-                Error request httpError ->
+                HamsterAPI.Error request httpError ->
                     update (APICallFinished [ toString httpError ]) model
 
         FetchedTodaysFacts factsMsg ->
             case factsMsg of
-                Success request facts ->
+                HamsterAPI.Success request facts ->
                     ( { model | facts = facts, userMessages = UserMessage.empty }, Cmd.none )
 
-                Error request httpError ->
+                HamsterAPI.Error request httpError ->
                     update (APICallFinished [ toString httpError ]) model
 
         FetchTodaysFacts ->
             let
                 hamsterClientCmd =
-                    call getTodaysFacts
+                    HamsterClient.call HamsterCalls.getTodaysFacts
             in
                 ( model, Cmd.map FetchedTodaysFacts hamsterClientCmd )
 
@@ -162,7 +146,7 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every (Time.second * 3) Refresh
+    Time.every (Time.second * 5) Refresh
 
 
 init : ( Model, Cmd Msg )

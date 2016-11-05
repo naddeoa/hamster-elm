@@ -1,4 +1,4 @@
-module Activities exposing (..)
+module Activities exposing (Activities, decode, encode)
 
 import Html exposing (Html, text, ul, li)
 import Json.Decode as Json exposing ((:=), string, object2)
@@ -21,9 +21,3 @@ decode =
 encode : Activities -> Value
 encode activities =
     Encode.list (List.map Activity.encode activities)
-
-
-toHtml : Activities -> Html a
-toHtml activities =
-    ul []
-        (List.map (Activity.toHtml) activities)
